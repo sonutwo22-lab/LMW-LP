@@ -9,15 +9,13 @@ import {
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [hideNav, setHideNav] = useState(false);
+  const [showNav, setShowNav] = useState(false);
 
   // Handle scroll for floating navbar
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-      // Hide the navbar when scrolled past the hero section (approx 700px)
-      setHideNav(window.scrollY > 700);
+      // Show the navbar when scrolled past the hero section (approx 700px)
+      setShowNav(window.scrollY > 700);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -51,9 +49,9 @@ export default function App() {
         <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-100/40 blur-[120px]"></div>
       </div>
 
-      {/* Floating Clean Navbar */}
-      <div className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-500 ${hideNav ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}>
-        <nav className={`w-full max-w-6xl transition-all duration-500 rounded-full px-6 py-3 flex justify-between items-center ${scrolled ? 'bg-white/80 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white' : 'bg-transparent'}`}>
+      {/* Floating Clean Navbar - Hidden by default, shown when scrolled past hero */}
+      <div className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-500 ${showNav ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
+        <nav className="w-full max-w-6xl transition-all duration-500 rounded-full px-6 py-3 flex justify-between items-center bg-white/80 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             {/* Dark pill background to ensure white logos are visible on the light theme */}
             <div className="bg-[#001B70] p-2 rounded-full shadow-md">
@@ -137,41 +135,28 @@ export default function App() {
         </section>
 
         {}
+        {}
         <section id="portfolio" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
              <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">Our Work</h2>
              <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Recent Launches</h3>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
             {[
-              { title: 'Evolve Wellness', cat: 'E-commerce', img: 'https://images.unsplash.com/photo-1522542550221-31fd19575a2d?auto=format&fit=crop&w=800&q=80' },
-              { title: 'Apex Financial', cat: 'Corporate', img: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80' },
-              { title: 'Lumina Architecture', cat: 'Portfolio', img: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80' },
-              { title: 'Zenith Studio', cat: 'Agency', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80' },
-              { title: 'Bite Organic', cat: 'Food & Bev', img: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80' },
-              { title: 'Nova Fitness', cat: 'Booking', img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80' },
+              { title: 'Aura Luxe', cat: 'E-commerce', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Ecom-custom-1.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Ecom-custom-2.webp' },
+              { title: 'Vertex Global', cat: 'Corporate', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/premium-corporate-website-2.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/premium-corporate-website-1.webp' },
+              { title: 'Flux Creative', cat: 'Agency', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Creative-agency-2.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Creative-agency-1.webp' },
+              { title: 'Elias Croft', cat: 'Portfolio', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/photography-portfolio-webiste-1.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/photography-portfolio-webiste-2.webp' },
+              { title: 'The Gilded Fork', cat: 'Restaurant', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Restaurent-website-1.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Restaurent-website-2.webp' },
+              { title: 'Haven Collective', cat: 'Booking', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Booking-site-1.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Booking-site-2.webp' },
+              { title: 'Horizon Estates', cat: 'Real Estate', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/ChatGPT-12.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/ChatGPT-11.webp' },
+              { title: 'Roots Garden Center', cat: 'Local Business', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Local-business-2.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Local-business-1.webp' },
+              { title: 'Velvet Bean', cat: 'Cafe', img: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Cafe-2.webp', verticalImg: 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Cafe-1.webp' }
             ].map((project, i) => (
-              <motion.div 
-                key={i} 
-                whileHover={{ y: -8 }}
-                className="group bg-white rounded-[2rem] p-3 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 cursor-pointer transition-all duration-300"
-              >
-                <div className="aspect-[4/3] rounded-3xl overflow-hidden relative mb-4">
-                  <div className="absolute inset-0 bg-[#0314B0]/0 group-hover:bg-[#0314B0]/10 transition-colors duration-500 z-10 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300">
-                       <ExternalLink className="w-5 h-5 text-[#0314B0]" />
-                    </div>
-                  </div>
-                  <img src={project.img} alt={project.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                </div>
-                <div className="px-4 pb-3">
-                  <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{project.cat}</p>
-                  <h4 className="text-xl font-extrabold text-slate-800">{project.title}</h4>
-                </div>
-              </motion.div>
+              <PortfolioCard key={i} project={project} />
             ))}
-          </div>
+          </motion.div>
         </section>
 
         {}
@@ -201,7 +186,7 @@ export default function App() {
           </div>
         </section>
 
-        {}
+        {/* Reviews Section */}
         <section id="reviews" className="py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
@@ -242,7 +227,7 @@ export default function App() {
 
       </main>
 
-      {}
+      {/* Floating Bottom CTA */}
       <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pointer-events-none flex justify-center pb-6 md:pb-8">
         <motion.button
           initial={{ y: 100, opacity: 0 }}
@@ -396,8 +381,8 @@ function ApplicationModal({ onClose }) {
              {/* THE ROCKET - Shared Layout Id allows smooth morphing to step 5 */}
              {step < 5 && (
                <motion.div 
-                  layoutId="hero-rocket"
-                  className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-lg relative z-50"
+                 layoutId="hero-rocket"
+                 className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-lg relative z-50"
                >
                  <Rocket className="w-6 h-6 text-white" fill="currentColor" />
                </motion.div>
@@ -616,7 +601,7 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {}
+            {/* Success Step 5 */}
             {step === 5 && (
               <motion.div key="step5" className="text-center py-16 relative overflow-visible h-full min-h-[300px] flex flex-col items-center justify-center">
                 
@@ -704,5 +689,60 @@ function ApplicationModal({ onClose }) {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
       `}} />
     </div>
+  );
+}
+
+function PortfolioCard({ project }) {
+  const [isHolding, setIsHolding] = useState(false);
+
+  // Prevent default drag behavior so the browser doesn't try to drag the image
+  const preventDrag = (e) => e.preventDefault();
+
+  return (
+    <motion.div 
+      layout
+      whileHover={{ y: -8 }}
+      onMouseDown={() => setIsHolding(true)}
+      onMouseUp={() => setIsHolding(false)}
+      onMouseLeave={() => setIsHolding(false)}
+      onTouchStart={() => setIsHolding(true)}
+      onTouchEnd={() => setIsHolding(false)}
+      onTouchCancel={() => setIsHolding(false)}
+      onContextMenu={(e) => e.preventDefault()}
+      style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
+      className="group bg-white rounded-[2rem] p-3 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 cursor-pointer transition-all duration-300 flex flex-col"
+    >
+      <motion.div 
+        layout
+        className={`w-full relative rounded-3xl overflow-hidden mb-4 bg-slate-100 transition-[padding-top] duration-500 ease-in-out ${isHolding ? 'pt-[160%]' : 'pt-[75%]'}`}
+      >
+        <img 
+          src={project.img} 
+          alt={project.title} 
+          onDragStart={preventDrag} 
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHolding ? 'opacity-0' : 'opacity-100'}`} 
+        />
+        <img 
+          src={project.verticalImg} 
+          alt={`${project.title} Vertical`} 
+          onDragStart={preventDrag} 
+          className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} 
+        />
+        
+        {/* Overlay and Indicator */}
+        <div className={`absolute inset-0 bg-[#0314B0]/0 group-hover:bg-[#0314B0]/10 transition-colors duration-500 z-10 flex flex-col items-center justify-end pb-6 ${isHolding ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            {/* Hold to preview animated pill (visible on hover) */}
+            <div className="bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+              Hold to preview
+            </div>
+        </div>
+      </motion.div>
+      
+      <motion.div layout className="px-4 pb-3">
+        <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{project.cat}</p>
+        <h4 className="text-xl font-extrabold text-slate-800">{project.title}</h4>
+      </motion.div>
+    </motion.div>
   );
 }
