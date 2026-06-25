@@ -487,6 +487,7 @@ function ApplicationModal({ onClose }) {
             },
             body: JSON.stringify({
                 _subject: `New Application: ${formData.businessName}`,
+                _autoresponse: `Hi ${formData.firstName},\n\nThank you for applying to Launch My Website! We have safely received your project details for ${formData.businessName}.\n\nOur team is currently reviewing your requirements, and we will be in touch shortly to schedule your free strategy call.\n\nBest regards,\nThe Launch My Website Team\nhttps://launchmywebsite.agency`,
                 Name: formData.firstName,
                 Email: formData.email,
                 Phone: formData.phone || "Not provided",
@@ -737,8 +738,18 @@ function ApplicationModal({ onClose }) {
                     <input 
                       type="text" 
                       value={formData.budget}
-                      onChange={(e) => updateData({ budget: e.target.value })}
-                      placeholder="e.g. £1,500 or £2,500"
+                      onChange={(e) => {
+                        // Extract only digits from the input
+                        const numericValue = e.target.value.replace(/\D/g, '');
+                        if (numericValue) {
+                          // Format with commas and prepend the Pound sign
+                          updateData({ budget: '£' + parseInt(numericValue, 10).toLocaleString('en-GB') });
+                        } else {
+                          // If empty, clear the field entirely
+                          updateData({ budget: '' });
+                        }
+                      }}
+                      placeholder="e.g. £1,500"
                       className={`w-full bg-slate-50 border-none ${errors.budget ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
                     />
                     {errors.budget && <p className="text-red-500 text-sm mt-2 font-bold">{errors.budget}</p>}
