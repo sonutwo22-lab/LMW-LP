@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Rocket, ChevronRight, ChevronLeft, ChevronDown,
@@ -12,6 +12,45 @@ export default function App() {
   const [showNav, setShowNav] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [websiteCount, setWebsiteCount] = useState(6328);
+
+  const hasAutoPaused = useRef(false);
+  const videoRef = useRef(null);
+
+  // Force programmatic autoplay on load/reload
+  useEffect(() => {
+    const attemptPlay = async () => {
+      if (videoRef.current) {
+        try {
+          // Attempt to play the video with sound
+          await videoRef.current.play();
+        } catch (error) {
+          console.warn("Browser blocked unmuted autoplay. The user must interact with the document first.", error);
+        }
+      }
+    };
+    
+    // Slight delay ensures the video element is fully mounted and ready
+    const timer = setTimeout(attemptPlay, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleVideoTimeUpdate = (e) => {
+    // 63 seconds = 1 minute 3 seconds
+    if (!hasAutoPaused.current && e.target.currentTime >= 63) {
+      e.target.pause();
+      hasAutoPaused.current = true;
+    }
+  };
+
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  };
 
   // Dynamic counter increment based on time
   useEffect(() => {
@@ -140,6 +179,7 @@ export default function App() {
             </span> agency pricing & jumpstart your business.
           </motion.h1>
 
+          {/* Centered Video */}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -148,10 +188,19 @@ export default function App() {
           >
             <div className="absolute -inset-4 bg-gradient-to-b from-black/5 to-transparent rounded-[2.5rem] blur-xl opacity-50 -z-10"></div>
             <div className="relative aspect-video rounded-[2rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white">
-              <video autoPlay loop muted playsInline className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105" src="https://cdn.coverr.co/videos/coverr-working-in-a-cafe-2-5203/1080p.mp4" />
+              <video 
+                ref={videoRef}
+                autoPlay 
+                playsInline
+                onClick={togglePlayPause}
+                onTimeUpdate={handleVideoTimeUpdate}
+                className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105 cursor-pointer"
+                src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Final-video-LP-1.mp4"
+              />
             </div>
           </motion.div>
           
+          {/* CTA Buttons */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
