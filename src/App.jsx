@@ -101,8 +101,8 @@ export default function App() {
         </nav>
       </div>
 
-      <main className="relative z-10 pt-32 pb-40">
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20 flex flex-col items-center">
+      <main className="relative z-10 pt-6 md:pt-8 pb-40">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-20 flex flex-col items-center">
           
           {/* Trust Banner with Leaves */}
           <motion.div 
@@ -410,6 +410,7 @@ function ApplicationModal({ onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rocketStage, setRocketStage] = useState('idle');
   const [shake, setShake] = useState(false);
+  const [showOtherFeature, setShowOtherFeature] = useState(false);
 
   const [formData, setFormData] = useState({
     businessName: '',
@@ -417,6 +418,7 @@ function ApplicationModal({ onClose }) {
     otherCategory: '',
     purpose: [],
     features: [],
+    otherFeature: '',
     budget: '',
     firstName: '',
     email: '',
@@ -478,6 +480,11 @@ function ApplicationModal({ onClose }) {
       setIsSubmitting(true);
       
       try {
+        let finalFeatures = [...formData.features];
+        if (formData.otherFeature && formData.otherFeature.trim() !== '') {
+          finalFeatures.push(`Custom: ${formData.otherFeature.trim()}`);
+        }
+
         // Send form data directly to your Hostinger email via FormSubmit API
         await fetch("https://formsubmit.co/ajax/sales@launchmywebsite.agency", {
             method: "POST",
@@ -494,7 +501,7 @@ function ApplicationModal({ onClose }) {
                 BusinessName: formData.businessName,
                 Industry: formData.category === 'Other' ? formData.otherCategory : formData.category,
                 PrimaryGoals: formData.purpose.join(', '),
-                DesiredFeatures: formData.features.length > 0 ? formData.features.join(', ') : "None selected",
+                DesiredFeatures: finalFeatures.length > 0 ? finalFeatures.join(', ') : "None selected",
                 Budget: formData.budget
             })
         });
@@ -730,7 +737,35 @@ function ApplicationModal({ onClose }) {
                           </div>
                         )
                       })}
+                      
+                      {/* Dynamic 'Add More Features' Button */}
+                      <div 
+                        onClick={() => setShowOtherFeature(!showOtherFeature)}
+                        className={`cursor-pointer px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${showOtherFeature ? 'bg-[#0314B0] text-white border-[#0314B0] shadow-[0_8px_15px_rgba(3,20,176,0.2)] scale-[1.02]' : 'bg-transparent text-slate-500 border-dashed border-slate-300 hover:bg-slate-50 hover:text-slate-700'}`}
+                      >
+                        + Add more features
+                      </div>
                     </div>
+                    
+                    {/* Expanding Text Field for Custom Features */}
+                    <AnimatePresence>
+                      {showOtherFeature && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <input 
+                            type="text" 
+                            value={formData.otherFeature}
+                            onChange={(e) => updateData({ otherFeature: e.target.value })}
+                            placeholder="e.g. 3D Model Viewer, Interactive Map..."
+                            className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm"
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   <div>
@@ -805,36 +840,55 @@ function ApplicationModal({ onClose }) {
             {/* Success Step 5 */}
             {step === 5 && (
               <motion.div key="step5" className="text-center py-16 relative overflow-visible h-full min-h-[300px] flex flex-col items-center justify-center">
-                <motion.div
-                  layoutId="hero-rocket"
-                  animate={ rocketStage === 'launched' 
-                    ? { y: -1000, scale: 0.5, opacity: 0 } 
-                    : { y: 0, scale: 2.5, opacity: 1 }     
-                  }
-                  transition={ rocketStage === 'launched' 
-                    ? { duration: 1.2, ease: "easeIn" } 
-                    : { duration: 0.8, type: "spring", bounce: 0.3 }
-                  }
-                  className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-[0_20px_50px_rgba(3,20,176,0.4)] relative z-50 mb-10"
-                >
-                   <Rocket className="w-8 h-8 text-white" fill="currentColor" />
-                   {rocketStage === 'launched' && (
-                     <motion.div 
-                       initial={{ opacity: 0, scaleY: 0 }}
-                       animate={{ opacity: [0.5, 1, 0.5], scaleY: [1, 2, 1] }} 
-                       transition={{ repeat: Infinity, duration: 0.1 }}
-                       className="absolute -bottom-16 w-8 h-20 bg-gradient-to-b from-orange-400 via-yellow-300 to-transparent rounded-full blur-[8px] -z-10 origin-top"
-                     />
-                   )}
-                </motion.div>
+                
+                <div className="relative w-full h-32 flex items-center justify-center mb-6">
+                  {/* The Morphing Rocket - It receives layoutId="hero-rocket" from the header */}
+                  <motion.div
+                    layoutId="hero-rocket"
+                    animate={ rocketStage === 'launched' 
+                      ? { y: -1000, scale: 0.5, opacity: 0 } // Flies out of the screen
+                      : { y: 0, scale: 2.5, opacity: 1 }     // Centers and grows large
+                    }
+                    transition={ rocketStage === 'launched' 
+                      ? { duration: 1.2, ease: "easeIn" } 
+                      : { duration: 0.8, type: "spring", bounce: 0.3 }
+                    }
+                    className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-[0_20px_50px_rgba(3,20,176,0.4)] absolute z-50"
+                  >
+                     <Rocket className="w-8 h-8 text-white" fill="currentColor" />
+                     
+                     {/* Fire appearing only when launched */}
+                     {rocketStage === 'launched' && (
+                       <motion.div 
+                         initial={{ opacity: 0, scaleY: 0 }}
+                         animate={{ opacity: [0.5, 1, 0.5], scaleY: [1, 2, 1] }} 
+                         transition={{ repeat: Infinity, duration: 0.1 }}
+                         className="absolute -bottom-16 w-8 h-20 bg-gradient-to-b from-orange-400 via-yellow-300 to-transparent rounded-full blur-[8px] -z-10 origin-top"
+                       />
+                     )}
+                  </motion.div>
 
+                  {/* The Big Blue Checkmark (Appears after rocket launches) */}
+                  {rocketStage === 'launched' && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.5, type: "spring", bounce: 0.5, duration: 0.6 }}
+                      className="w-24 h-24 rounded-full bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-[0_20px_50px_rgba(3,20,176,0.4)] absolute z-40"
+                    >
+                      <Check className="w-12 h-12 text-white" strokeWidth={4} />
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Text Reveal after the rocket flies away */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: rocketStage === 'launched' ? 1 : 0, y: rocketStage === 'launched' ? 0 : 30 }}
-                  transition={{ delay: 0.5, duration: 0.6 }}
+                  transition={{ delay: 0.6, duration: 0.6 }}
                 >
                   <h3 className="text-4xl font-black mb-4 text-slate-900 tracking-tight">
-                    Application Launched!
+                    Application Submitted
                   </h3>
                   <p className="text-slate-500 mb-10 max-w-sm mx-auto text-lg font-medium leading-relaxed">
                     Thank you, <span className="font-extrabold text-slate-900">{formData.firstName}</span>. We're reviewing your requirements for <span className="font-extrabold text-slate-900">{formData.businessName}</span>. We'll be in touch shortly.
@@ -890,6 +944,7 @@ function ApplicationModal({ onClose }) {
 function PortfolioCard({ project, className = "flex" }) {
   const [isHolding, setIsHolding] = useState(false);
 
+  // Prevent default drag behavior so the browser doesn't try to drag the image
   const preventDrag = (e) => e.preventDefault();
 
   return (
@@ -910,13 +965,46 @@ function PortfolioCard({ project, className = "flex" }) {
         layout
         className={`w-full relative rounded-2xl sm:rounded-3xl overflow-hidden mb-3 sm:mb-4 bg-slate-100 transition-[padding-top] duration-500 ease-in-out ${isHolding ? 'pt-[160%]' : 'pt-[75%]'}`}
       >
-        <img src={project.img} alt={project.title} onDragStart={preventDrag} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHolding ? 'opacity-0' : 'opacity-100'}`} />
-        <img src={project.verticalImg} alt={`${project.title} Vertical`} onDragStart={preventDrag} className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} />
+        <img 
+          src={project.img} 
+          alt={project.title} 
+          onDragStart={preventDrag} 
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHolding ? 'opacity-0' : 'opacity-100'}`} 
+        />
+        <img 
+          src={project.verticalImg} 
+          alt={`${project.title} Vertical`} 
+          onDragStart={preventDrag} 
+          className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} 
+        />
         
+        {/* Overlay and Indicator */}
         <div className={`absolute inset-0 bg-[#0314B0]/0 group-hover:bg-[#0314B0]/10 transition-colors duration-500 z-10 flex flex-col items-center justify-end pb-4 sm:pb-6 ${isHolding ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-            <div className="bg-slate-900/80 backdrop-blur-md text-white text-[10px] sm:text-xs font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-2 shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-              <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-blue-400 rounded-full animate-pulse" />
-              Hold to preview
+            {/* Always visible hold to preview pill with continuous finger animation */}
+            <div className="bg-[#121626]/95 backdrop-blur-md text-white text-[11px] sm:text-xs font-extrabold px-3 sm:px-4 py-2.5 rounded-full flex items-center gap-2.5 shadow-2xl border border-white/10 relative transition-transform duration-300 transform group-hover:scale-105">
+              
+              <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
+                 {/* Blue dot base */}
+                 <motion.div 
+                   animate={{ scale: [1, 0.7, 1] }}
+                   transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                   className="absolute w-2.5 h-2.5 bg-[#4B83FF] rounded-full" 
+                 />
+                 
+                 {/* Finger pressing animation */}
+                 <motion.div
+                   animate={{ scale: [1, 0.9, 1], y: [-6, 2, -6], rotate: [-5, 0, -5] }}
+                   transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                   className="absolute z-20 origin-bottom-right"
+                   style={{ left: '2px', top: '-2px' }}
+                 >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff" stroke="#121626" strokeWidth="1.5">
+                      <path d="M12 2a2.5 2.5 0 0 1 2.5 2.5V10h.5a2.5 2.5 0 0 1 2.5 2.5v.5h.5a2.5 2.5 0 0 1 2.5 2.5v4.5a6.5 6.5 0 0 1-6.5 6.5h-2a6.5 6.5 0 0 1-4.75-2.14l-3.64-3.9a2.5 2.5 0 0 1 3.68-3.38l1.71 1.83V4.5A2.5 2.5 0 0 1 12 2z"/>
+                    </svg>
+                 </motion.div>
+              </div>
+
+              <span className="tracking-wide">Hold to preview</span>
             </div>
         </div>
       </motion.div>
