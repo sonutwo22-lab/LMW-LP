@@ -4,7 +4,7 @@ import {
   Rocket, ChevronRight, ChevronLeft, ChevronDown,
   Store, CalendarClock, Briefcase, Palette, Code, 
   Smartphone, Zap, Shield, Star, Users, X, ArrowRight,
-  Quote, ExternalLink, Check
+  Quote, ExternalLink, Check, VolumeX
 } from 'lucide-react';
 
 export default function App() {
@@ -12,6 +12,7 @@ export default function App() {
   const [showNav, setShowNav] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [websiteCount, setWebsiteCount] = useState(6328);
+  const [isMuted, setIsMuted] = useState(true);
 
   const hasAutoPaused = useRef(false);
   const videoRef = useRef(null);
@@ -42,12 +43,21 @@ export default function App() {
     }
   };
 
-  const togglePlayPause = () => {
+  const handleVideoInteraction = () => {
     if (videoRef.current) {
-      if (videoRef.current.paused) {
+      if (isMuted) {
+        // First interaction: Unmute, restart the video, and hide the overlay
+        videoRef.current.muted = false;
+        videoRef.current.currentTime = 0;
         videoRef.current.play();
+        setIsMuted(false);
       } else {
-        videoRef.current.pause();
+        // Subsequent interactions: standard play/pause toggle
+        if (videoRef.current.paused) {
+          videoRef.current.play();
+        } else {
+          videoRef.current.pause();
+        }
       }
     }
   };
@@ -191,12 +201,29 @@ export default function App() {
               <video 
                 ref={videoRef}
                 autoPlay 
+                muted={isMuted}
                 playsInline
-                onClick={togglePlayPause}
+                onClick={handleVideoInteraction}
                 onTimeUpdate={handleVideoTimeUpdate}
                 className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105 cursor-pointer"
                 src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Final-video-LP-1.mp4"
               />
+              
+              {/* Click to unmute overlay */}
+              <AnimatePresence>
+                {isMuted && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                    onClick={handleVideoInteraction}
+                    className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 z-10 flex items-center gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 bg-[#121626]/90 backdrop-blur-md rounded-full text-white cursor-pointer hover:bg-[#0314B0] transition-colors border border-white/20 shadow-2xl group/btn"
+                  >
+                    <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:animate-pulse" />
+                    <span className="text-xs sm:text-sm font-extrabold tracking-wide uppercase">Click for Sound</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
           
