@@ -16,9 +16,9 @@ export default async function handler(req, res) {
 
     const { data, error } = await resend.emails.send({
       // 1. THIS MUST MATCH YOUR VERIFIED HOSTINGER DOMAIN (e.g., info@launchmywebsite.agency)
-      from: 'Launch My Website <info@your-verified-domain.com>', 
+      from: 'Launch My Website <sales@launchmywebsite.agency>', 
       // 2. Put both your personal and Hostinger business emails here
-      to: ['sonutwo22@gmail.com', 'your-business-email@your-verified-domain.com'], 
+      to: ['sales@launchmywebsite.agency'], 
       subject: `New Lead: ${businessName} - ${firstName}`,
       html: `
         <h2>New Project Application</h2>
