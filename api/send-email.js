@@ -21,23 +21,19 @@ export default async function handler(req, res) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Acme <onboarding@resend.dev>',
-      to: ['sonutwo22@gmail.com'], // USE YOUR REAL EMAIL HERE
-      subject: `New Lead: ${body.businessName}`,
-      html: `<p>New lead from ${body.firstName} (${body.email})</p>`,
-    });
-
-    if (error) {
-      res.statusCode = 400;
-      return res.end(JSON.stringify({ error }));
-    }
-
-    res.statusCode = 200;
-    return res.end(JSON.stringify({ data }));
-
-  } catch (error) {
-    console.error("FATAL CRASH:", error);
-    res.statusCode = 500;
-    return res.end(JSON.stringify({ error: 'Failed to send email' }));
-  }
-}
+  from: 'Launch My Website <onboarding@resend.dev>', // You can change the name here
+  to: ['sonutwo22@gmail.com'], // Add your Hostinger email here too: ['sonutwo22@gmail.com', 'your-business-email@yourdomain.com']
+  subject: `New Lead: ${body.businessName}`,
+  html: `
+    <h2>New Project Application Received</h2>
+    <p><strong>Name:</strong> ${body.firstName}</p>
+    <p><strong>Email:</strong> ${body.email}</p>
+    <p><strong>Phone:</strong> ${body.phone || 'Not provided'}</p>
+    <hr />
+    <p><strong>Business Name:</strong> ${body.businessName}</p>
+    <p><strong>Industry:</strong> ${body.industry}</p>
+    <p><strong>Primary Goals:</strong> ${body.primaryGoals}</p>
+    <p><strong>Desired Features:</strong> ${body.desiredFeatures}</p>
+    <p><strong>Budget:</strong> ${body.budget}</p>
+  `,
+});
