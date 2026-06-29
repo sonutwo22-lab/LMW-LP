@@ -4,36 +4,44 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    res.statusCode = 405;
-    return res.end(JSON.stringify({ error: 'Method not allowed' }));
-  }
-
-  // Parse the body if Vite hasn't already
-  let body = req.body;
-  if (!body && typeof req.on === 'function') {
-      body = await new Promise((resolve, reject) => {
-          let data = '';
-          req.on('data', chunk => data += chunk);
-          req.on('end', () => resolve(JSON.parse(data || '{}')));
-          req.on('error', reject);
-      });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
+    // Extract the form data cleanly from Vercel's request
+    const { 
+      firstName, email, phone, businessName, 
+      industry, primaryGoals, desiredFeatures, budget 
+    } = req.body;
+
     const { data, error } = await resend.emails.send({
-  from: 'Launch My Website <onboarding@resend.dev>', // You can change the name here
-  to: ['sonutwo22@gmail.com'], // Add your Hostinger email here too: ['sonutwo22@gmail.com', 'your-business-email@yourdomain.com']
-  subject: `New Lead: ${body.businessName}`,
-  html: `
-    <h2>New Project Application Received</h2>
-    <p><strong>Name:</strong> ${body.firstName}</p>
-    <p><strong>Email:</strong> ${body.email}</p>
-    <p><strong>Phone:</strong> ${body.phone || 'Not provided'}</p>
-    <hr />
-    <p><strong>Business Name:</strong> ${body.businessName}</p>
-    <p><strong>Industry:</strong> ${body.industry}</p>
-    <p><strong>Primary Goals:</strong> ${body.primaryGoals}</p>
-    <p><strong>Desired Features:</strong> ${body.desiredFeatures}</p>
-    <p><strong>Budget:</strong> ${body.budget}</p>
-  `,
-});
+      // 1. THIS MUST MATCH YOUR VERIFIED HOSTINGER DOMAIN (e.g., info@launchmywebsite.agency)
+      from: 'Launch My Website <info@your-verified-domain.com>', 
+      // 2. Put both your personal and Hostinger business emails here
+      to: ['sonutwo22@gmail.com', 'your-business-email@your-verified-domain.com'], 
+      subject: `New Lead: ${businessName} - ${firstName}`,
+      html: `
+        <h2>New Project Application</h2>
+        <p><strong>Name:</strong> ${firstName}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <hr />
+        <p><strong>Business Name:</strong> ${businessName}</p>
+        <p><strong>Industry:</strong> ${industry}</p>
+        <p><strong>Goals:</strong> ${primaryGoals}</p>
+        <p><strong>Features:</strong> ${desiredFeatures}</p>
+        <p><strong>Budget:</strong> ${budget}</p>
+      `,
+    });
+
+    if (error) {
+      console.error("Resend Rejected the Email:", error);
+      return res.status(400).json({ error });
+    }
+
+    return res.status(200).json({ data });
+  } catch (error) {
+    console.error("Server Code Crashed:", error);
+    return res.status(500).json({ error: 'Failed to send email' });
+  }
+}
