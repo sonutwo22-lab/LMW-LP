@@ -561,36 +561,38 @@ function ApplicationModal({ onClose }) {
           finalFeatures.push(`Custom: ${formData.otherFeature.trim()}`);
         }
 
-        // Send form data directly to your Hostinger email via FormSubmit API
-        await fetch("https://formsubmit.co/ajax/sales@launchmywebsite.agency", {
+        // Package the form data cleanly
+        const submissionPayload = {
+          firstName: formData.firstName,
+          email: formData.email,
+          phone: formData.phone || "Not provided",
+          businessName: formData.businessName,
+          industry: formData.category === 'Other' ? formData.otherCategory : formData.category,
+          primaryGoals: formData.purpose.join(', '),
+          desiredFeatures: finalFeatures.length > 0 ? finalFeatures.join(', ') : "None selected",
+          budget: formData.budget
+        };
+
+        // Send it to your local serverless folder
+        const response = await fetch("/api/send-email", {
             method: "POST",
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                _subject: `New Application: ${formData.businessName}`,
-                _autoresponse: `Hi ${formData.firstName},\n\nThank you for applying to Launch My Website! We have safely received your project details for ${formData.businessName}.\n\nOur team is currently reviewing your requirements, and we will be in touch shortly to schedule your free strategy call.\n\nBest regards,\nThe Launch My Website Team\nhttps://launchmywebsite.agency`,
-                Name: formData.firstName,
-                Email: formData.email,
-                Phone: formData.phone || "Not provided",
-                BusinessName: formData.businessName,
-                Industry: formData.category === 'Other' ? formData.otherCategory : formData.category,
-                PrimaryGoals: formData.purpose.join(', '),
-                DesiredFeatures: finalFeatures.length > 0 ? finalFeatures.join(', ') : "None selected",
-                Budget: formData.budget
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(submissionPayload)
         });
 
+        if (!response.ok) throw new Error("Serverless API failed to send email");
+
+        // Success animation triggers
         setRocketStage('center');
         setStep(5);
         
         setTimeout(() => {
           setRocketStage('launched');
         }, 1200);
+
       } catch (err) {
-        console.error("Failed to send submission:", err);
-        // We still show the success animation so the user isn't stuck
+        console.error("Submission error:", err);
+        // Fallback so the user isn't frozen on screen if the network blips
         setRocketStage('center');
         setStep(5);
         setTimeout(() => setRocketStage('launched'), 1200);
