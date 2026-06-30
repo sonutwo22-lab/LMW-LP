@@ -8,14 +8,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Extract the newly added fields from the request
     const { 
       firstName, email, phone, businessName, 
       industry, primaryGoals, desiredFeatures, budget,
       wantsCall, callDate, callTime 
     } = req.body;
 
-    // Format the call preference string
     const callPreferenceText = wantsCall === 'yes' 
       ? `Requested call on ${callDate} at ${callTime} (UK Time)` 
       : 'No call requested';
@@ -52,11 +50,13 @@ export default async function handler(req, res) {
       html: `
         <div style="font-family: 'Inter', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #F8FAFC; padding: 20px; border-radius: 12px;">
           
+          <!-- Branded Header -->
           <div style="text-align: center; background: linear-gradient(to right, #0314B0, #001B70); padding: 30px 20px; border-radius: 12px 12px 0 0;">
             <img src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/header-logo.webp" alt="Launch My Website" style="height: 40px; margin-bottom: 15px;" />
             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900;">Application Received!</h1>
           </div>
           
+          <!-- Email Body -->
           <div style="background-color: #ffffff; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <p style="font-size: 16px; color: #334155; line-height: 1.6;">Hi <strong>${firstName}</strong>,</p>
             
@@ -64,12 +64,14 @@ export default async function handler(req, res) {
             
             <p style="font-size: 16px; color: #334155; line-height: 1.6;">Our team is currently reviewing your requirements, and one of our web strategists will reach out to you shortly to schedule your free strategy call.</p>
             
+            <!-- Call to Action Button -->
             <div style="text-align: center; margin: 30px 0;">
               <a href="https://launchmywebsite.agency" style="background-color: #ffb72b; color: #0f172a; padding: 14px 28px; text-decoration: none; font-weight: bold; border-radius: 50px; display: inline-block;">Explore Our Portfolio</a>
             </div>
             
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
             
+            <!-- Footer -->
             <p style="font-size: 14px; color: #64748b; text-align: center; margin: 0;">
               The Launch My Website Team<br>
               <a href="mailto:sales@launchmywebsite.agency" style="color: #0314B0; text-decoration: none;">sales@launchmywebsite.agency</a>

@@ -5,7 +5,7 @@ import {
   Store, CalendarClock, Briefcase, Palette, Code, 
   Smartphone, Zap, Shield, Star, Users, X, ArrowRight,
   Quote, ExternalLink, Check, VolumeX,
-  Facebook, Instagram, Mail, PhoneCall, Calendar
+  Mail, PhoneCall, Calendar
 } from 'lucide-react';
 
 export default function App() {
@@ -154,7 +154,6 @@ export default function App() {
         </nav>
       </div>
 
-      {}
       <main className="relative z-10 pt-6 md:pt-8 pb-40">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-20 flex flex-col items-center">
           
@@ -194,7 +193,6 @@ export default function App() {
             </span> agency pricing & jumpstart your business.
           </motion.h1>
 
-          {}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,7 +210,6 @@ export default function App() {
                 src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Final-video-LP-1.mp4"
               />
               
-              {/* Click to unmute VSL overlay */}
               <AnimatePresence>
                 {isMuted && (
                   <motion.div 
@@ -230,7 +227,6 @@ export default function App() {
             </div>
           </motion.div>
           
-          {/* CTA Buttons */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -249,7 +245,6 @@ export default function App() {
           </motion.div>
         </section>
 
-        {}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col md:flex-row items-center gap-12 lg:gap-20">
           <div className="w-full md:w-1/2 relative">
              <div className="absolute -top-8 -left-8 w-24 h-24 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-pulse"></div>
@@ -287,7 +282,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* Dynamic Stats Row */}
         <section className="bg-white border-y border-slate-100 py-16">
           <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
             <div className="flex flex-col items-center pt-6 md:pt-0">
@@ -310,7 +304,6 @@ export default function App() {
           </div>
         </section>
 
-        {}
         <section className="bg-gradient-to-br from-[#0314B0] to-[#001B70] text-white py-24 relative overflow-hidden">
           <div className="absolute -bottom-10 -left-10 w-48 h-48 opacity-20 transform rotate-45">
              <Rocket className="w-full h-full text-white" />
@@ -334,7 +327,6 @@ export default function App() {
           </div>
         </section>
 
-        {}
         <section id="portfolio" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
              <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">Our Work</h2>
@@ -359,9 +351,9 @@ export default function App() {
                 className={!showAllProjects && i >= 4 ? 'hidden md:flex' : 'flex'}
               />
             ))}
+            
           </motion.div>
 
-          {/* View More Button for Mobile */}
           {!showAllProjects && (
             <motion.div layout className="mt-10 flex justify-center md:hidden">
               <button 
@@ -374,7 +366,6 @@ export default function App() {
           )}
         </section>
 
-        {}
         {/* Extra Trust Elements Section */}
         <div className="max-w-6xl mx-auto px-4 mt-24 mb-[-4rem] relative z-20">
           <div className="bg-gradient-to-br from-[#0314B0] to-[#001B70] rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white shadow-[0_20px_50px_rgba(3,20,176,0.2)] relative overflow-hidden">
@@ -430,7 +421,6 @@ export default function App() {
           </div>
         </section>
 
-        {}
         <section id="reviews" className="py-24 overflow-hidden bg-white">
           <div className="text-center mb-16 px-4">
             <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">Client Success</h2>
@@ -480,7 +470,6 @@ export default function App() {
 
       </main>
 
-      {}
       <footer className="bg-[#121626] text-slate-400 py-16 border-t border-slate-800 relative z-10 pb-32 md:pb-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10">
           <div>
@@ -493,10 +482,10 @@ export default function App() {
              <p className="text-sm font-medium leading-relaxed max-w-sm mb-8 text-slate-400">Premium, custom web design at 50-60% off standard agency pricing. We help entrepreneurs jumpstart their business with high-converting websites.</p>
              <div className="flex gap-4">
                <a href="https://www.facebook.com/profile.php?id=61591235288039" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
-                 <Facebook className="w-5 h-5" />
+                 <FacebookIcon className="w-5 h-5" />
                </a>
                <a href="https://instagram.com/launchmywebsite.agency" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
-                 <Instagram className="w-5 h-5" />
+                 <InstagramIcon className="w-5 h-5" />
                </a>
              </div>
           </div>
@@ -513,7 +502,6 @@ export default function App() {
         </div>
       </footer>
 
-      {}
       <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pointer-events-none flex justify-center pb-6 md:pb-8">
         <motion.button
           initial={{ y: 100, opacity: 0 }}
@@ -574,7 +562,7 @@ function ApplicationModal({ onClose }) {
     firstName: '',
     email: '',
     phone: '',
-    wantsCall: '', // 'yes' or 'no'
+    wantsCall: '', 
     callDate: '',
     callTime: ''
   });
@@ -610,7 +598,6 @@ function ApplicationModal({ onClose }) {
       if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "A valid email is absolutely required.";
       if (!formData.wantsCall) newErrors.wantsCall = "Please let us know your call preference.";
       
-      // Enforce call scheduling if 'yes' is selected
       if (formData.wantsCall === 'yes') {
         if (!formData.callDate) newErrors.callDate = "Please select a preferred date.";
         if (!formData.callTime) newErrors.callTime = "Please select a preferred time.";
@@ -646,7 +633,6 @@ function ApplicationModal({ onClose }) {
           finalFeatures.push(`Custom: ${formData.otherFeature.trim()}`);
         }
 
-        // Package all the new form data cleanly
         const submissionPayload = {
           firstName: formData.firstName,
           email: formData.email,
@@ -656,13 +642,11 @@ function ApplicationModal({ onClose }) {
           primaryGoals: formData.purpose.join(', '),
           desiredFeatures: finalFeatures.length > 0 ? finalFeatures.join(', ') : "None selected",
           budget: formData.budget,
-          // Add the new call scheduling fields
           wantsCall: formData.wantsCall,
           callDate: formData.callDate,
           callTime: formData.callTime
         };
 
-        // Send it to your Vercel serverless backend
         const response = await fetch("/api/send-email", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -757,7 +741,6 @@ function ApplicationModal({ onClose }) {
         <div className="p-6 sm:p-10 overflow-y-auto flex-1 custom-scrollbar relative z-10 bg-white">
           <AnimatePresence mode="wait">
             
-            {}
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Let's start with your business details</h3>
@@ -826,7 +809,6 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {}
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">What is the primary goal? <span className="text-red-500">*</span></h3>
@@ -870,7 +852,6 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {}
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Scope & Budget</h3>
@@ -952,7 +933,6 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {}
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">How can we reach you?</h3>
@@ -1059,7 +1039,6 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {}
             {step === 5 && (
               <motion.div key="step5" className="text-center py-16 relative overflow-visible h-full min-h-[300px] flex flex-col items-center justify-center">
                 
@@ -1087,7 +1066,6 @@ function ApplicationModal({ onClose }) {
                      )}
                   </motion.div>
 
-                  {/* Big Blue Checkmark (Appears after rocket) */}
                   {rocketStage === 'launched' && (
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
@@ -1124,7 +1102,6 @@ function ApplicationModal({ onClose }) {
           </AnimatePresence>
         </div>
 
-        {}
         {step < 5 && (
           <div className="p-6 bg-white flex justify-between items-center z-10 relative border-t border-slate-50">
             {step > 1 ? (
@@ -1162,7 +1139,6 @@ function ApplicationModal({ onClose }) {
 function PortfolioCard({ project, className = "flex" }) {
   const [isHolding, setIsHolding] = useState(false);
 
-  // Prevent default drag behavior so the browser doesn't try to drag the image
   const preventDrag = (e) => e.preventDefault();
 
   return (
@@ -1196,21 +1172,14 @@ function PortfolioCard({ project, className = "flex" }) {
           className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} 
         />
         
-        {/* Overlay and Permanent Indicator */}
         <div className={`absolute inset-0 bg-[#0314B0]/0 transition-colors duration-500 z-10 flex flex-col items-center justify-end pb-4 sm:pb-6 ${isHolding ? 'opacity-0 pointer-events-none' : 'opacity-100 group-hover:bg-[#0314B0]/10'}`}>
-            
-            {/* Always visible hold to preview pill with continuous finger animation */}
             <div className="bg-[#121626]/95 backdrop-blur-md text-white text-[11px] sm:text-xs font-extrabold px-3 sm:px-4 py-2.5 rounded-full flex items-center gap-2.5 shadow-2xl border border-white/10 relative transition-transform duration-300 transform group-hover:scale-105">
-              
               <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
-                 {/* Blue dot base */}
                  <motion.div 
                    animate={{ scale: [1, 0.7, 1] }}
                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                    className="absolute w-2.5 h-2.5 bg-[#4B83FF] rounded-full" 
                  />
-                 
-                 {/* Finger pressing animation */}
                  <motion.div
                    animate={{ scale: [1, 0.9, 1], y: [-6, 2, -6], rotate: [-5, 0, -5] }}
                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
@@ -1222,7 +1191,6 @@ function PortfolioCard({ project, className = "flex" }) {
                     </svg>
                  </motion.div>
               </div>
-
               <span className="tracking-wide">Hold to preview</span>
             </div>
         </div>
@@ -1233,5 +1201,24 @@ function PortfolioCard({ project, className = "flex" }) {
         <h4 className="text-sm sm:text-xl font-extrabold text-slate-800 leading-tight">{project.title}</h4>
       </motion.div>
     </motion.div>
+  );
+}
+
+// Inline SVG components to bypass missing Lucide brand icons
+function FacebookIcon({ className }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3.6l.4-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+    </svg>
+  );
+}
+
+function InstagramIcon({ className }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+    </svg>
   );
 }
