@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Rocket, ChevronRight, ChevronLeft, ChevronDown,
   Store, CalendarClock, Briefcase, Palette, Code, 
   Smartphone, Zap, Shield, Star, Users, X, ArrowRight,
-  Quote, ExternalLink, Check, VolumeX
+  Quote, ExternalLink, Check, VolumeX,
+  Facebook, Instagram, Mail, PhoneCall, Calendar
 } from 'lucide-react';
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNav, setShowNav] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
-  const [websiteCount, setWebsiteCount] = useState(6328);
+  const [websiteCount, setWebsiteCount] = useState(6231);
   const [isMuted, setIsMuted] = useState(true);
 
   const hasAutoPaused = useRef(false);
@@ -22,15 +23,15 @@ export default function App() {
     const attemptPlay = async () => {
       if (videoRef.current) {
         try {
-          // Attempt to play the video with sound
+          // Play muted first to guarantee autoplay on all browsers (VSL style)
+          videoRef.current.muted = true;
           await videoRef.current.play();
         } catch (error) {
-          console.warn("Browser blocked unmuted autoplay. The user must interact with the document first.", error);
+          console.warn("Browser blocked autoplay. The user must interact first.", error);
         }
       }
     };
     
-    // Slight delay ensures the video element is fully mounted and ready
     const timer = setTimeout(attemptPlay, 100);
     return () => clearTimeout(timer);
   }, []);
@@ -62,12 +63,15 @@ export default function App() {
     }
   };
 
-  // Dynamic counter increment based on time
+  // Dynamic counter increment based on time (increments by ~7 every day)
   useEffect(() => {
     const baseDate = new Date('2024-01-01T00:00:00Z').getTime();
     const now = new Date().getTime();
-    const hoursPassed = Math.floor((now - baseDate) / (1000 * 60 * 60));
-    setWebsiteCount(6328 + hoursPassed);
+    const daysPassed = Math.max(0, Math.floor((now - baseDate) / (1000 * 60 * 60 * 24)));
+    
+    // Starts around 6231 and deterministically grows every day
+    const dailyIncrement = Math.floor(daysPassed * 7.5);
+    setWebsiteCount(6231 + dailyIncrement);
   }, []);
 
   // Handle scroll for floating navbar
@@ -150,6 +154,7 @@ export default function App() {
         </nav>
       </div>
 
+      {}
       <main className="relative z-10 pt-6 md:pt-8 pb-40">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-20 flex flex-col items-center">
           
@@ -189,7 +194,7 @@ export default function App() {
             </span> agency pricing & jumpstart your business.
           </motion.h1>
 
-          {/* Centered Video */}
+          {}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -197,19 +202,17 @@ export default function App() {
             className="w-full relative mb-12 group"
           >
             <div className="absolute -inset-4 bg-gradient-to-b from-black/5 to-transparent rounded-[2.5rem] blur-xl opacity-50 -z-10"></div>
-            <div className="relative aspect-video rounded-[2rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white">
+            <div className="relative aspect-video rounded-[2rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white cursor-pointer">
               <video 
                 ref={videoRef}
-                autoPlay 
-                muted={isMuted}
                 playsInline
                 onClick={handleVideoInteraction}
                 onTimeUpdate={handleVideoTimeUpdate}
-                className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105 cursor-pointer"
+                className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105"
                 src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Final-video-LP-1.mp4"
               />
               
-              {/* Click to unmute overlay */}
+              {/* Click to unmute VSL overlay */}
               <AnimatePresence>
                 {isMuted && (
                   <motion.div 
@@ -217,7 +220,7 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     onClick={handleVideoInteraction}
-                    className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 z-10 flex items-center gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 bg-[#121626]/90 backdrop-blur-md rounded-full text-white cursor-pointer hover:bg-[#0314B0] transition-colors border border-white/20 shadow-2xl group/btn"
+                    className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 z-10 flex items-center gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 bg-[#121626]/90 backdrop-blur-md rounded-full text-white hover:bg-[#0314B0] transition-colors border border-white/20 shadow-2xl group/btn"
                   >
                     <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:animate-pulse" />
                     <span className="text-xs sm:text-sm font-extrabold tracking-wide uppercase">Click for Sound</span>
@@ -246,6 +249,7 @@ export default function App() {
           </motion.div>
         </section>
 
+        {}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col md:flex-row items-center gap-12 lg:gap-20">
           <div className="w-full md:w-1/2 relative">
              <div className="absolute -top-8 -left-8 w-24 h-24 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-pulse"></div>
@@ -283,6 +287,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* Dynamic Stats Row */}
         <section className="bg-white border-y border-slate-100 py-16">
           <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
             <div className="flex flex-col items-center pt-6 md:pt-0">
@@ -297,12 +302,15 @@ export default function App() {
             </div>
             <div className="flex flex-col items-center pt-6 md:pt-0">
               <p className="text-slate-500 font-bold mb-3 text-sm uppercase tracking-wider">Amount we charge</p>
-              <div className="text-4xl md:text-5xl font-black text-[#0314B0] title-font tracking-tight">50-60% <span className="text-2xl text-slate-900">OFF</span></div>
+              <div className="text-4xl md:text-5xl font-black text-[#0314B0] title-font tracking-tight flex items-center justify-center gap-2">
+                 50-60% <span className="text-2xl text-slate-900">OFF</span>
+              </div>
               <div className="h-1 w-16 bg-blue-400 mt-4 rounded-full"></div>
             </div>
           </div>
         </section>
 
+        {}
         <section className="bg-gradient-to-br from-[#0314B0] to-[#001B70] text-white py-24 relative overflow-hidden">
           <div className="absolute -bottom-10 -left-10 w-48 h-48 opacity-20 transform rotate-45">
              <Rocket className="w-full h-full text-white" />
@@ -326,6 +334,7 @@ export default function App() {
           </div>
         </section>
 
+        {}
         <section id="portfolio" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
              <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">Our Work</h2>
@@ -352,6 +361,7 @@ export default function App() {
             ))}
           </motion.div>
 
+          {/* View More Button for Mobile */}
           {!showAllProjects && (
             <motion.div layout className="mt-10 flex justify-center md:hidden">
               <button 
@@ -364,7 +374,37 @@ export default function App() {
           )}
         </section>
 
-        <section id="benefits" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {}
+        {/* Extra Trust Elements Section */}
+        <div className="max-w-6xl mx-auto px-4 mt-24 mb-[-4rem] relative z-20">
+          <div className="bg-gradient-to-br from-[#0314B0] to-[#001B70] rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white shadow-[0_20px_50px_rgba(3,20,176,0.2)] relative overflow-hidden">
+            <div className="absolute top-[-50%] right-[-10%] w-64 h-64 bg-blue-400/30 blur-[80px] rounded-full pointer-events-none"></div>
+            
+            <div className="relative z-10 md:max-w-lg mb-8 md:mb-0 text-center md:text-left">
+              <h4 className="text-2xl md:text-3xl font-black mb-4 title-font leading-tight">Trusted by entrepreneurs across 40+ industries worldwide.</h4>
+              <p className="text-blue-200 font-medium text-sm md:text-base leading-relaxed">We don't just build websites; we build scalable digital foundations backed by enterprise-grade security and proven conversion strategies.</p>
+            </div>
+            
+            <div className="relative z-10 flex flex-col sm:flex-row md:flex-col gap-4 w-full md:w-auto">
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 hover:bg-white/15 transition-colors">
+                 <Shield className="w-8 h-8 text-blue-300 shrink-0" />
+                 <div className="text-left">
+                   <p className="font-bold text-white text-sm">Enterprise Security</p>
+                   <p className="text-xs text-blue-200 font-medium mt-0.5">Bank-level encryption standard</p>
+                 </div>
+              </div>
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 hover:bg-white/15 transition-colors">
+                 <Star className="w-8 h-8 text-yellow-400 shrink-0 fill-yellow-400" />
+                 <div className="text-left">
+                   <p className="font-bold text-white text-sm">5-Star Rated Agency</p>
+                   <p className="text-xs text-blue-200 font-medium mt-0.5">100% Client Satisfaction</p>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section id="benefits" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
           <div className="text-center mb-16">
              <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">The Advantage</h2>
              <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">Why Launch With Us?</h3>
@@ -390,6 +430,7 @@ export default function App() {
           </div>
         </section>
 
+        {}
         <section id="reviews" className="py-24 overflow-hidden bg-white">
           <div className="text-center mb-16 px-4">
             <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">Client Success</h2>
@@ -439,6 +480,40 @@ export default function App() {
 
       </main>
 
+      {}
+      <footer className="bg-[#121626] text-slate-400 py-16 border-t border-slate-800 relative z-10 pb-32 md:pb-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div>
+             <div className="flex items-center gap-3 mb-6">
+               <div className="bg-[#0314B0] p-2 rounded-full shadow-md">
+                 <img src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/header-logo.webp" alt="Logo" className="h-6 w-auto object-contain" />
+               </div>
+               <span className="font-extrabold text-white tracking-tight title-font text-xl">Launch My Website</span>
+             </div>
+             <p className="text-sm font-medium leading-relaxed max-w-sm mb-8 text-slate-400">Premium, custom web design at 50-60% off standard agency pricing. We help entrepreneurs jumpstart their business with high-converting websites.</p>
+             <div className="flex gap-4">
+               <a href="https://www.facebook.com/profile.php?id=61591235288039" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
+                 <Facebook className="w-5 h-5" />
+               </a>
+               <a href="https://instagram.com/launchmywebsite.agency" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
+                 <Instagram className="w-5 h-5" />
+               </a>
+             </div>
+          </div>
+          <div className="flex flex-col md:items-end justify-center gap-6">
+             <div className="text-left md:text-right">
+               <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Support</p>
+               <a href="mailto:help@launchyourwebsite.agency" className="text-white font-bold text-lg hover:text-[#4B83FF] transition-colors">help@launchyourwebsite.agency</a>
+             </div>
+             <div className="text-left md:text-right">
+               <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Enquiries & Sales</p>
+               <a href="mailto:sales@launchmywebsite.agency" className="text-white font-bold text-lg hover:text-[#4B83FF] transition-colors">sales@launchmywebsite.agency</a>
+             </div>
+          </div>
+        </div>
+      </footer>
+
+      {}
       <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pointer-events-none flex justify-center pb-6 md:pb-8">
         <motion.button
           initial={{ y: 100, opacity: 0 }}
@@ -498,7 +573,10 @@ function ApplicationModal({ onClose }) {
     budget: '',
     firstName: '',
     email: '',
-    phone: ''
+    phone: '',
+    wantsCall: '', // 'yes' or 'no'
+    callDate: '',
+    callTime: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -530,6 +608,13 @@ function ApplicationModal({ onClose }) {
     } else if (currentStep === 4) {
       if (!formData.firstName.trim()) newErrors.firstName = "First name is strictly required.";
       if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "A valid email is absolutely required.";
+      if (!formData.wantsCall) newErrors.wantsCall = "Please let us know your call preference.";
+      
+      // Enforce call scheduling if 'yes' is selected
+      if (formData.wantsCall === 'yes') {
+        if (!formData.callDate) newErrors.callDate = "Please select a preferred date.";
+        if (!formData.callTime) newErrors.callTime = "Please select a preferred time.";
+      }
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -561,7 +646,7 @@ function ApplicationModal({ onClose }) {
           finalFeatures.push(`Custom: ${formData.otherFeature.trim()}`);
         }
 
-        // Package the form data cleanly
+        // Package all the new form data cleanly
         const submissionPayload = {
           firstName: formData.firstName,
           email: formData.email,
@@ -570,10 +655,14 @@ function ApplicationModal({ onClose }) {
           industry: formData.category === 'Other' ? formData.otherCategory : formData.category,
           primaryGoals: formData.purpose.join(', '),
           desiredFeatures: finalFeatures.length > 0 ? finalFeatures.join(', ') : "None selected",
-          budget: formData.budget
+          budget: formData.budget,
+          // Add the new call scheduling fields
+          wantsCall: formData.wantsCall,
+          callDate: formData.callDate,
+          callTime: formData.callTime
         };
 
-        // Send it to your local serverless folder
+        // Send it to your Vercel serverless backend
         const response = await fetch("/api/send-email", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -582,7 +671,6 @@ function ApplicationModal({ onClose }) {
 
         if (!response.ok) throw new Error("Serverless API failed to send email");
 
-        // Success animation triggers
         setRocketStage('center');
         setStep(5);
         
@@ -591,8 +679,7 @@ function ApplicationModal({ onClose }) {
         }, 1200);
 
       } catch (err) {
-        console.error("Submission error:", err);
-        // Fallback so the user isn't frozen on screen if the network blips
+        console.error("Failed to send submission:", err);
         setRocketStage('center');
         setStep(5);
         setTimeout(() => setRocketStage('launched'), 1200);
@@ -670,7 +757,7 @@ function ApplicationModal({ onClose }) {
         <div className="p-6 sm:p-10 overflow-y-auto flex-1 custom-scrollbar relative z-10 bg-white">
           <AnimatePresence mode="wait">
             
-            {/* Step 1 */}
+            {}
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Let's start with your business details</h3>
@@ -715,7 +802,6 @@ function ApplicationModal({ onClose }) {
                     {errors.category && <p className="text-red-500 text-sm mt-2 font-bold">{errors.category}</p>}
                   </div>
 
-                  {/* Dynamic 'Other' Text Field */}
                   <AnimatePresence>
                     {formData.category === 'Other' && (
                       <motion.div
@@ -740,7 +826,7 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {/* Step 2 */}
+            {}
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">What is the primary goal? <span className="text-red-500">*</span></h3>
@@ -784,7 +870,7 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {/* Step 3 */}
+            {}
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Scope & Budget</h3>
@@ -816,7 +902,6 @@ function ApplicationModal({ onClose }) {
                         )
                       })}
                       
-                      {/* Dynamic 'Add More Features' Button */}
                       <div 
                         onClick={() => setShowOtherFeature(!showOtherFeature)}
                         className={`cursor-pointer px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${showOtherFeature ? 'bg-[#0314B0] text-white border-[#0314B0] shadow-[0_8px_15px_rgba(3,20,176,0.2)] scale-[1.02]' : 'bg-transparent text-slate-500 border-dashed border-slate-300 hover:bg-slate-50 hover:text-slate-700'}`}
@@ -825,7 +910,6 @@ function ApplicationModal({ onClose }) {
                       </div>
                     </div>
                     
-                    {/* Expanding Text Field for Custom Features */}
                     <AnimatePresence>
                       {showOtherFeature && (
                         <motion.div
@@ -852,13 +936,10 @@ function ApplicationModal({ onClose }) {
                       type="text" 
                       value={formData.budget}
                       onChange={(e) => {
-                        // Extract only digits from the input
                         const numericValue = e.target.value.replace(/\D/g, '');
                         if (numericValue) {
-                          // Format with commas and prepend the Pound sign
                           updateData({ budget: '£' + parseInt(numericValue, 10).toLocaleString('en-GB') });
                         } else {
-                          // If empty, clear the field entirely
                           updateData({ budget: '' });
                         }
                       }}
@@ -871,7 +952,7 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {/* Step 4 */}
+            {}
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">How can we reach you?</h3>
@@ -911,21 +992,83 @@ function ApplicationModal({ onClose }) {
                       className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-extrabold text-slate-800 mb-3 mt-8 border-t border-slate-100 pt-8">Would you like a free strategy call? <span className="text-red-500">*</span></label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div 
+                        onClick={() => updateData({ wantsCall: 'yes' })}
+                        className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'yes' ? 'border-[#0314B0] bg-blue-50 text-[#0314B0] shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
+                      >
+                        <PhoneCall className="w-5 h-5" />
+                        Yes, let's talk
+                      </div>
+                      <div 
+                        onClick={() => updateData({ wantsCall: 'no', callDate: '', callTime: '' })}
+                        className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'no' ? 'border-slate-800 bg-slate-800 text-white shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
+                      >
+                        <Mail className="w-5 h-5" />
+                        No, just email me
+                      </div>
+                    </div>
+                    {errors.wantsCall && <p className="text-red-500 text-sm mt-2 font-bold">{errors.wantsCall}</p>}
+                  </div>
+
+                  <AnimatePresence>
+                    {formData.wantsCall === 'yes' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4">
+                          <div>
+                            <label className="block text-sm font-extrabold text-slate-800 mb-2">Select a Date <span className="text-red-500">*</span></label>
+                            <div className="relative">
+                              <input 
+                                type="date"
+                                min={new Date().toISOString().split('T')[0]}
+                                value={formData.callDate}
+                                onChange={(e) => updateData({ callDate: e.target.value })}
+                                className={`w-full bg-white border ${errors.callDate ? 'border-red-400 ring-1 ring-red-400' : 'border-slate-200'} rounded-xl px-4 py-3.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
+                              />
+                            </div>
+                            {errors.callDate && <p className="text-red-500 text-xs mt-1.5 font-bold">{errors.callDate}</p>}
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-extrabold text-slate-800 mb-2">Desired Time (11 AM - 6 PM UK Time) <span className="text-red-500">*</span></label>
+                            <div className="relative">
+                              <input 
+                                type="time"
+                                min="11:00"
+                                max="18:00"
+                                value={formData.callTime}
+                                onChange={(e) => updateData({ callTime: e.target.value })}
+                                className={`w-full bg-white border ${errors.callTime ? 'border-red-400 ring-1 ring-red-400' : 'border-slate-200'} rounded-xl px-4 py-3.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
+                              />
+                            </div>
+                            {errors.callTime && <p className="text-red-500 text-xs mt-1.5 font-bold">{errors.callTime}</p>}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             )}
 
-            {/* Success Step 5 */}
+            {}
             {step === 5 && (
               <motion.div key="step5" className="text-center py-16 relative overflow-visible h-full min-h-[300px] flex flex-col items-center justify-center">
                 
                 <div className="relative w-full h-32 flex items-center justify-center mb-6">
-                  {/* The Morphing Rocket - It receives layoutId="hero-rocket" from the header */}
                   <motion.div
                     layoutId="hero-rocket"
                     animate={ rocketStage === 'launched' 
-                      ? { y: -1000, scale: 0.5, opacity: 0 } // Flies out of the screen
-                      : { y: 0, scale: 2.5, opacity: 1 }     // Centers and grows large
+                      ? { y: -1000, scale: 0.5, opacity: 0 } 
+                      : { y: 0, scale: 2.5, opacity: 1 }     
                     }
                     transition={ rocketStage === 'launched' 
                       ? { duration: 1.2, ease: "easeIn" } 
@@ -934,8 +1077,6 @@ function ApplicationModal({ onClose }) {
                     className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-[0_20px_50px_rgba(3,20,176,0.4)] absolute z-50"
                   >
                      <Rocket className="w-8 h-8 text-white" fill="currentColor" />
-                     
-                     {/* Fire appearing only when launched */}
                      {rocketStage === 'launched' && (
                        <motion.div 
                          initial={{ opacity: 0, scaleY: 0 }}
@@ -946,7 +1087,7 @@ function ApplicationModal({ onClose }) {
                      )}
                   </motion.div>
 
-                  {/* The Big Blue Checkmark (Appears after rocket launches) */}
+                  {/* Big Blue Checkmark (Appears after rocket) */}
                   {rocketStage === 'launched' && (
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
@@ -959,7 +1100,6 @@ function ApplicationModal({ onClose }) {
                   )}
                 </div>
 
-                {/* Text Reveal after the rocket flies away */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: rocketStage === 'launched' ? 1 : 0, y: rocketStage === 'launched' ? 0 : 30 }}
@@ -984,7 +1124,7 @@ function ApplicationModal({ onClose }) {
           </AnimatePresence>
         </div>
 
-        {/* Modal Footer */}
+        {}
         {step < 5 && (
           <div className="p-6 bg-white flex justify-between items-center z-10 relative border-t border-slate-50">
             {step > 1 ? (
@@ -1056,8 +1196,9 @@ function PortfolioCard({ project, className = "flex" }) {
           className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} 
         />
         
-        {/* Overlay and Indicator */}
-        <div className={`absolute inset-0 bg-[#0314B0]/0 group-hover:bg-[#0314B0]/10 transition-colors duration-500 z-10 flex flex-col items-center justify-end pb-4 sm:pb-6 ${isHolding ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        {/* Overlay and Permanent Indicator */}
+        <div className={`absolute inset-0 bg-[#0314B0]/0 transition-colors duration-500 z-10 flex flex-col items-center justify-end pb-4 sm:pb-6 ${isHolding ? 'opacity-0 pointer-events-none' : 'opacity-100 group-hover:bg-[#0314B0]/10'}`}>
+            
             {/* Always visible hold to preview pill with continuous finger animation */}
             <div className="bg-[#121626]/95 backdrop-blur-md text-white text-[11px] sm:text-xs font-extrabold px-3 sm:px-4 py-2.5 rounded-full flex items-center gap-2.5 shadow-2xl border border-white/10 relative transition-transform duration-300 transform group-hover:scale-105">
               

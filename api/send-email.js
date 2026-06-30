@@ -8,10 +8,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Extract the newly added fields from the request
     const { 
       firstName, email, phone, businessName, 
-      industry, primaryGoals, desiredFeatures, budget 
+      industry, primaryGoals, desiredFeatures, budget,
+      wantsCall, callDate, callTime 
     } = req.body;
+
+    // Format the call preference string
+    const callPreferenceText = wantsCall === 'yes' 
+      ? `Requested call on ${callDate} at ${callTime} (UK Time)` 
+      : 'No call requested';
 
     // -------------------------------------------------------------
     // EMAIL 1: Send the raw lead data to YOUR business inbox
@@ -25,6 +32,7 @@ export default async function handler(req, res) {
         <p><strong>Name:</strong> ${firstName}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <p><strong>Strategy Call:</strong> ${callPreferenceText}</p>
         <hr />
         <p><strong>Business Name:</strong> ${businessName}</p>
         <p><strong>Industry:</strong> ${industry}</p>
@@ -39,7 +47,6 @@ export default async function handler(req, res) {
     // -------------------------------------------------------------
     const notifyCustomer = resend.emails.send({
       from: 'Launch My Website <sales@launchmywebsite.agency>',
-      // We use the 'email' variable here so it goes to whatever the customer typed
       to: [email], 
       subject: `We've received your application, ${firstName}! 🚀`,
       html: `
@@ -72,10 +79,8 @@ export default async function handler(req, res) {
       `,
     });
 
-    // We use Promise.all to send both emails at the exact same time
     const [adminResult, customerResult] = await Promise.all([notifyAdmin, notifyCustomer]);
 
-    // Check if either email failed to send
     if (adminResult.error) throw adminResult.error;
     if (customerResult.error) throw customerResult.error;
 
