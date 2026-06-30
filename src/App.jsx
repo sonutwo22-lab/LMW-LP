@@ -5,7 +5,7 @@ import {
   Store, CalendarClock, Briefcase, Palette, Code, 
   Smartphone, Zap, Shield, Star, Users, X, ArrowRight,
   Quote, ExternalLink, Check, VolumeX,
-  Mail, PhoneCall, Calendar
+  Mail, PhoneCall, Calendar, Lock
 } from 'lucide-react';
 
 export default function App() {
@@ -599,6 +599,7 @@ function ApplicationModal({ onClose }) {
       if (!formData.wantsCall) newErrors.wantsCall = "Please let us know your call preference.";
       
       if (formData.wantsCall === 'yes') {
+        if (!formData.phone || !formData.phone.trim()) newErrors.phone = "Phone number is required to schedule a call.";
         if (!formData.callDate) newErrors.callDate = "Please select a preferred date.";
         if (!formData.callTime) newErrors.callTime = "Please select a preferred time.";
       }
@@ -960,17 +961,24 @@ function ApplicationModal({ onClose }) {
                       className={`w-full bg-slate-50 border-none ${errors.email ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
                     />
                     {errors.email && <p className="text-red-500 text-sm mt-2 font-bold">{errors.email}</p>}
+                    <p className="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5 px-2">
+                       <Lock className="w-3.5 h-3.5 text-slate-400" />
+                       We will never send promotional emails or share your data. Purely for contact purposes.
+                    </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-extrabold text-slate-800 mb-2">Phone Number (Optional)</label>
+                    <label className="block text-sm font-extrabold text-slate-800 mb-2">
+                      Phone Number {formData.wantsCall === 'yes' ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-medium">(Optional)</span>}
+                    </label>
                     <input 
                       type="tel" 
                       value={formData.phone}
                       onChange={(e) => updateData({ phone: e.target.value })}
                       placeholder="+44 (555) 000-0000"
-                      className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg"
+                      className={`w-full bg-slate-50 border-none ${errors.phone ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
                     />
+                    {errors.phone && <p className="text-red-500 text-sm mt-2 font-bold">{errors.phone}</p>}
                   </div>
 
                   <div>
