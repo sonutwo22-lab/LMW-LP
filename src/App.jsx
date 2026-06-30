@@ -94,20 +94,34 @@ export default function App() {
     link.href = 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/favicon.webp';
     document.title = "Launch My Website | Premium Custom Web Design";
 
-    let metaColorScheme = document.querySelector("meta[name='color-scheme']");
-    if (!metaColorScheme) {
-      metaColorScheme = document.createElement('meta');
-      metaColorScheme.name = 'color-scheme';
-      document.getElementsByTagName('head')[0].appendChild(metaColorScheme);
-    }
-    metaColorScheme.content = 'light';
+    // Force light mode tags to prevent mobile browser dark themes and extensions
+    const tags = [
+      { name: 'color-scheme', content: 'only light' },
+      { name: 'supported-color-schemes', content: 'light' },
+      { name: 'darkreader-lock', content: 'true' }
+    ];
+
+    tags.forEach(({ name, content }) => {
+      let meta = document.querySelector(`meta[name='${name}']`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = name;
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+      meta.content = content;
+    });
   }, []);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 overflow-x-hidden relative selection:bg-blue-200 selection:text-blue-900" style={{ fontFamily: "'Inter', sans-serif" }}>
       
       <style dangerouslySetInnerHTML={{__html: `
-        :root { color-scheme: light !important; }
+        :root { 
+          color-scheme: only light !important; 
+        }
+        html, body {
+          background-color: #F8FAFC !important;
+        }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap');
         h1, h2, h3, h4, h5, h6, .title-font { font-family: 'Sora', sans-serif !important; }
         button { font-family: 'Sora', sans-serif !important; }
@@ -629,13 +643,15 @@ function ApplicationModal({ onClose }) {
       setIsSubmitting(true);
       
       // 1. Generate a unique ID for this specific submission
-      const eventId = crypto.randomUUID();
+      const eventId = crypto.randomUUID(); // Generate a unique ID for this specific click
 
       try {
         // 2. Fire the Pixel event immediately (Client-side)
         // This informs Meta that the event happened in the browser
         if (window.fbq) {
-          window.fbq('track', 'SubmitApplication', {}, { eventID: eventId });
+          window.fbq('track', 'SubmitApplication', {
+            // Pass the ID here so Meta knows this is a unique event
+          }, { eventID: eventId });
         }
 
         let finalFeatures = [...formData.features];
