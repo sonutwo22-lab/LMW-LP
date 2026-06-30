@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
+import crypto from 'crypto';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Helper function to hash data as required by Meta (SHA-256)
+const hashData = (data) => {
+  if (!data) return null;
+  return crypto.createHash('sha256').update(data.toLowerCase().trim()).digest('hex');
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,7 +18,7 @@ export default async function handler(req, res) {
     const { 
       firstName, email, phone, businessName, 
       industry, primaryGoals, desiredFeatures, budget,
-      wantsCall, callDate, callTime 
+      wantsCall, callDate, callTime, eventId // <-- Added eventId here
     } = req.body;
 
     const callPreferenceText = wantsCall === 'yes' 
@@ -86,9 +93,40 @@ export default async function handler(req, res) {
     if (adminResult.error) throw adminResult.error;
     if (customerResult.error) throw customerResult.error;
 
+    // -------------------------------------------------------------
+    // META CONVERSIONS API LOGIC
+    // -------------------------------------------------------------
+    const PIXEL_ID = '1713657916510847';
+    const ACCESS_TOKEN = process.env.META_ACCESS_TOKEN; 
+
+    // Optional Check: Only run if the token is set to prevent crashes in dev environments
+    if (ACCESS_TOKEN) {
+      await fetch(`https://graph.facebook.com/v20.0/${PIXEL_ID}/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          data: [{
+            event_name: 'SubmitApplication',
+            event_time: Math.floor(Date.now() / 1000),
+            event_id: eventId, // Used for deduplication
+            action_source: 'website',
+            user_data: {
+              em: hashData(email),
+              ph: hashData(phone),
+              client_ip_address: req.headers['x-forwarded-for'] || req.socket?.remoteAddress,
+              client_user_agent: req.headers['user-agent']
+            }
+          }],
+          access_token: ACCESS_TOKEN
+        })
+      });
+    } else {
+      console.warn("Meta Access Token is missing, skipping Conversions API event.");
+    }
+
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error("Email Sending Error:", error);
-    return res.status(500).json({ error: 'Failed to send emails' });
+    console.error("API Error:", error);
+    return res.status(500).json({ error: error.message || 'Failed to process request' });
   }
 }

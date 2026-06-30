@@ -628,7 +628,16 @@ function ApplicationModal({ onClose }) {
     if (validateStep(4)) {
       setIsSubmitting(true);
       
+      // 1. Generate a unique ID for this specific submission
+      const eventId = crypto.randomUUID();
+
       try {
+        // 2. Fire the Pixel event immediately (Client-side)
+        // This informs Meta that the event happened in the browser
+        if (window.fbq) {
+          window.fbq('track', 'SubmitApplication', {}, { eventID: eventId });
+        }
+
         let finalFeatures = [...formData.features];
         if (formData.otherFeature && formData.otherFeature.trim() !== '') {
           finalFeatures.push(`Custom: ${formData.otherFeature.trim()}`);
@@ -645,7 +654,9 @@ function ApplicationModal({ onClose }) {
           budget: formData.budget,
           wantsCall: formData.wantsCall,
           callDate: formData.callDate,
-          callTime: formData.callTime
+          callTime: formData.callTime,
+          // 3. Pass the eventId to your backend so it can be sent via CAPI
+          eventId: eventId
         };
 
         const response = await fetch("/api/send-email", {
@@ -654,7 +665,7 @@ function ApplicationModal({ onClose }) {
             body: JSON.stringify(submissionPayload)
         });
 
-        if (!response.ok) throw new Error("Serverless API failed to send email");
+        if (!response.ok) throw new Error("Serverless API failed");
 
         setRocketStage('center');
         setStep(5);
@@ -664,7 +675,7 @@ function ApplicationModal({ onClose }) {
         }, 1200);
 
       } catch (err) {
-        console.error("Failed to send submission:", err);
+        console.error("Submission failed", err);
         setRocketStage('center');
         setStep(5);
         setTimeout(() => setRocketStage('launched'), 1200);
