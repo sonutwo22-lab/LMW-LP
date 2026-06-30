@@ -700,7 +700,19 @@ function ApplicationModal({ onClose }) {
   };
 
   useEffect(() => {
+    // Lock background scroll
     document.body.style.overflow = 'hidden';
+
+    // --- FORM START TRACKING ---
+    // This fires perfectly once when the modal opens, bypassing all buttons.
+    if (window.fbq) {
+      const startEventId = crypto.randomUUID(); 
+      window.fbq('trackCustom', 'FormStart', {
+        content_name: 'Project Application Modal'
+      }, { eventID: startEventId });
+    }
+    // ---------------------------
+
     return () => { document.body.style.overflow = 'auto'; };
   }, []);
 
