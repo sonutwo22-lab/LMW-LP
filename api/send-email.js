@@ -62,7 +62,7 @@ export default async function handler(req, res) {
             
             <p style="font-size: 16px; color: #334155; line-height: 1.6;">Thank you for applying to build your website with us. We have successfully received your project details for <strong>${businessName}</strong>.</p>
             
-            <p style="font-size: 16px; color: #334155; line-height: 1.6;">Our team is currently reviewing your requirements, and one of our web strategists will reach out to you shortly to schedule your free strategy call.</p>
+            <p style="font-size: 16px; color: #334155; line-height: 1.6;">Our team is currently reviewing your requirements, and one of our web strategists will reach out to you shortly.</p>
             
             <!-- Call to Action Button -->
             <div style="text-align: center; margin: 30px 0;">
