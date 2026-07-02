@@ -221,8 +221,15 @@ export default function App() {
                 onClick={handleVideoInteraction}
                 onTimeUpdate={handleVideoTimeUpdate}
                 className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105"
-                src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/Final-video-LP-1.mp4"
-              />
+              >
+                {/* WebM loads first for maximum speed on Chrome/Android */}
+                <source src="https://launchmywebsite.agency/Whero.webm" type="video/webm" />
+                
+                {/* MP4 fallback for perfect compatibility on Safari/iOS */}
+                <source src="https://launchmywebsite.agency/Mhero.mp4" type="video/mp4" />
+                
+                Your browser does not support the video tag.
+              </video>
               
               <AnimatePresence>
                 {isMuted && (
