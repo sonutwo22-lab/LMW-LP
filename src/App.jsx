@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Rocket, ChevronRight, ChevronLeft, ChevronDown,
   Store, CalendarClock, Briefcase, Palette, Code, 
   Smartphone, Zap, Shield, Star, Users, X, ArrowRight,
-  Quote, ExternalLink, Check, VolumeX,
-  Mail, PhoneCall, Calendar, Lock
+  Quote, Check, VolumeX, Mail, PhoneCall, Lock
 } from 'lucide-react';
 
 export default function App() {
@@ -171,7 +170,6 @@ export default function App() {
       <main className="relative z-10 pt-6 md:pt-8 pb-40">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-20 flex flex-col items-center">
           
-          {/* Trust Banner with Leaves */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -215,6 +213,7 @@ export default function App() {
           >
             <div className="absolute -inset-4 bg-gradient-to-b from-black/5 to-transparent rounded-[2.5rem] blur-xl opacity-50 -z-10"></div>
             <div className="relative aspect-video rounded-[2rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white cursor-pointer">
+              
               <video 
                 ref={videoRef}
                 playsInline
@@ -572,7 +571,11 @@ function ApplicationModal({ onClose }) {
   const [shake, setShake] = useState(false);
   const [showOtherFeature, setShowOtherFeature] = useState(false);
 
+  // Email First Strategy: We now collect Name, Email, and Phone on Step 1
   const [formData, setFormData] = useState({
+    firstName: '',
+    email: '',
+    phone: '',
     businessName: '',
     category: '',
     otherCategory: '',
@@ -580,15 +583,47 @@ function ApplicationModal({ onClose }) {
     features: [],
     otherFeature: '',
     budget: '',
-    firstName: '',
-    email: '',
-    phone: '',
     wantsCall: '', 
     callDate: '',
     callTime: ''
   });
 
   const [errors, setErrors] = useState({});
+  const sessionIdRef = useRef(crypto.randomUUID());
+
+  const savePartialLead = async (currentStep, isAbandoned = false) => {
+    // Only capture if they have filled at least their email or name
+    if (!formData.email && !formData.firstName) return;
+
+    try {
+      let finalFeatures = [...formData.features];
+      if (formData.otherFeature && formData.otherFeature.trim() !== '') {
+        finalFeatures.push(`Custom: ${formData.otherFeature.trim()}`);
+      }
+
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: sessionIdRef.current,
+          isPartial: true,
+          isAbandoned: isAbandoned,
+          lastCompletedStep: currentStep,
+          firstName: formData.firstName || "Pending",
+          email: formData.email || "Pending",
+          phone: formData.phone || "Pending",
+          businessName: formData.businessName || "Pending",
+          industry: formData.category === 'Other' ? formData.otherCategory : (formData.category || "Pending"),
+          primaryGoals: formData.purpose.length > 0 ? formData.purpose.join(', ') : "Pending",
+          desiredFeatures: finalFeatures.length > 0 ? finalFeatures.join(', ') : "Pending",
+          budget: formData.budget || "Pending",
+          wantsCall: formData.wantsCall || "Pending"
+        })
+      });
+    } catch (e) {
+      console.warn("Partial capture ping failed");
+    }
+  };
 
   const updateData = (fields) => {
     setFormData(prev => ({ ...prev, ...fields }));
@@ -605,6 +640,8 @@ function ApplicationModal({ onClose }) {
   const validateStep = (currentStep) => {
     let newErrors = {};
     if (currentStep === 1) {
+      if (!formData.firstName.trim()) newErrors.firstName = "First name is strictly required.";
+      if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "A valid email is absolutely required.";
       if (!formData.businessName.trim()) newErrors.businessName = "Business name is required.";
       if (!formData.category) newErrors.category = "Please select an industry.";
       if (formData.category === 'Other' && (!formData.otherCategory || !formData.otherCategory.trim())) {
@@ -615,8 +652,6 @@ function ApplicationModal({ onClose }) {
     } else if (currentStep === 3) {
       if (!formData.budget || !formData.budget.trim()) newErrors.budget = "Please enter your desired budget.";
     } else if (currentStep === 4) {
-      if (!formData.firstName.trim()) newErrors.firstName = "First name is strictly required.";
-      if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "A valid email is absolutely required.";
       if (!formData.wantsCall) newErrors.wantsCall = "Please let us know your call preference.";
       
       if (formData.wantsCall === 'yes') {
@@ -636,8 +671,26 @@ function ApplicationModal({ onClose }) {
 
   const handleNext = () => {
     if (validateStep(step)) {
+      
+      // --- META PIXEL TRACKING: Step Completion ---
+      if (window.fbq) {
+        const stepEventId = crypto.randomUUID(); 
+        window.fbq('trackCustom', `Form_Step_${step}_Complete`, {
+          content_name: `Completed Application Step ${step}`
+        }, { eventID: stepEventId });
+      }
+      // --------------------------------------------
+
+      savePartialLead(step, false); // Save progress in background
       setStep(prev => prev + 1);
     }
+  };
+
+  const handleModalClose = () => {
+    if (step < 5) {
+      savePartialLead(step, true); // Mark as abandoned if closed early
+    }
+    onClose();
   };
 
   const handleBack = () => {
@@ -649,16 +702,11 @@ function ApplicationModal({ onClose }) {
     if (validateStep(4)) {
       setIsSubmitting(true);
       
-      // 1. Generate a unique ID for this specific submission
-      const eventId = crypto.randomUUID(); // Generate a unique ID for this specific click
+      const eventId = crypto.randomUUID(); 
 
       try {
-        // 2. Fire the Pixel event immediately (Client-side)
-        // This informs Meta that the event happened in the browser
         if (window.fbq) {
-          window.fbq('track', 'SubmitApplication', {
-            // Pass the ID here so Meta knows this is a unique event
-          }, { eventID: eventId });
+          window.fbq('track', 'SubmitApplication', {}, { eventID: eventId });
         }
 
         let finalFeatures = [...formData.features];
@@ -667,6 +715,9 @@ function ApplicationModal({ onClose }) {
         }
 
         const submissionPayload = {
+          sessionId: sessionIdRef.current,
+          isPartial: false,
+          isAbandoned: false,
           firstName: formData.firstName,
           email: formData.email,
           phone: formData.phone || "Not provided",
@@ -678,7 +729,6 @@ function ApplicationModal({ onClose }) {
           wantsCall: formData.wantsCall,
           callDate: formData.callDate,
           callTime: formData.callTime,
-          // 3. Pass the eventId to your backend so it can be sent via CAPI
           eventId: eventId
         };
 
@@ -707,18 +757,14 @@ function ApplicationModal({ onClose }) {
   };
 
   useEffect(() => {
-    // Lock background scroll
     document.body.style.overflow = 'hidden';
 
-    // --- FORM START TRACKING ---
-    // This fires perfectly once when the modal opens, bypassing all buttons.
     if (window.fbq) {
       const startEventId = crypto.randomUUID(); 
       window.fbq('trackCustom', 'FormStart', {
         content_name: 'Project Application Modal'
       }, { eventID: startEventId });
     }
-    // ---------------------------
 
     return () => { document.body.style.overflow = 'auto'; };
   }, []);
@@ -734,7 +780,7 @@ function ApplicationModal({ onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
+        onClick={handleModalClose}
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
       />
 
@@ -768,7 +814,7 @@ function ApplicationModal({ onClose }) {
           </div>
 
           {step < 5 && (
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-800 transition-colors bg-slate-50 p-2 rounded-full hover:bg-slate-100">
+            <button onClick={handleModalClose} className="text-slate-400 hover:text-slate-800 transition-colors bg-slate-50 p-2 rounded-full hover:bg-slate-100">
               <X className="w-5 h-5" />
             </button>
           )}
@@ -788,12 +834,53 @@ function ApplicationModal({ onClose }) {
         <div className="p-6 sm:p-10 overflow-y-auto flex-1 custom-scrollbar relative z-10 bg-white">
           <AnimatePresence mode="wait">
             
+            {/* Step 1 */}
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Let's start with your business details</h3>
+                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Let's get to know you</h3>
                 
                 <div className="space-y-6">
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-extrabold text-slate-800 mb-2">Your Name <span className="text-red-500">*</span></label>
+                      <input 
+                        type="text" 
+                        value={formData.firstName}
+                        onChange={(e) => updateData({ firstName: e.target.value })}
+                        placeholder="John Doe"
+                        className={`w-full bg-slate-50 border-none ${errors.firstName ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
+                      />
+                      {errors.firstName && <p className="text-red-500 text-sm mt-2 font-bold">{errors.firstName}</p>}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-extrabold text-slate-800 mb-2">Email Address <span className="text-red-500">*</span></label>
+                      <input 
+                        type="email" 
+                        value={formData.email}
+                        onChange={(e) => updateData({ email: e.target.value })}
+                        placeholder="john@example.com"
+                        className={`w-full bg-slate-50 border-none ${errors.email ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
+                      />
+                      {errors.email && <p className="text-red-500 text-sm mt-2 font-bold">{errors.email}</p>}
+                    </div>
+                  </div>
+
                   <div>
+                    <label className="block text-sm font-extrabold text-slate-800 mb-2">
+                      Phone Number <span className="text-slate-400 font-medium">(Optional for now)</span>
+                    </label>
+                    <input 
+                      type="tel" 
+                      value={formData.phone}
+                      onChange={(e) => updateData({ phone: e.target.value })}
+                      placeholder="+44 (555) 000-0000"
+                      className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg"
+                    />
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100">
                     <label className="block text-sm font-extrabold text-slate-800 mb-2">Business / Project Name <span className="text-red-500">*</span></label>
                     <input 
                       type="text" 
@@ -856,6 +943,7 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
+            {/* Step 2 */}
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">What is the primary goal? <span className="text-red-500">*</span></h3>
@@ -899,6 +987,7 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
+            {/* Step 3 */}
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Scope & Budget</h3>
@@ -930,6 +1019,7 @@ function ApplicationModal({ onClose }) {
                         )
                       })}
                       
+                      {/* Dynamic 'Add More Features' Button */}
                       <div 
                         onClick={() => setShowOtherFeature(!showOtherFeature)}
                         className={`cursor-pointer px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${showOtherFeature ? 'bg-[#0314B0] text-white border-[#0314B0] shadow-[0_8px_15px_rgba(3,20,176,0.2)] scale-[1.02]' : 'bg-transparent text-slate-500 border-dashed border-slate-300 hover:bg-slate-50 hover:text-slate-700'}`}
@@ -938,6 +1028,7 @@ function ApplicationModal({ onClose }) {
                       </div>
                     </div>
                     
+                    {/* Expanding Text Field for Custom Features */}
                     <AnimatePresence>
                       {showOtherFeature && (
                         <motion.div
@@ -964,10 +1055,13 @@ function ApplicationModal({ onClose }) {
                       type="text" 
                       value={formData.budget}
                       onChange={(e) => {
+                        // Extract only digits from the input
                         const numericValue = e.target.value.replace(/\D/g, '');
                         if (numericValue) {
+                          // Format with commas and prepend the Pound sign
                           updateData({ budget: '£' + parseInt(numericValue, 10).toLocaleString('en-GB') });
                         } else {
+                          // If empty, clear the field entirely
                           updateData({ budget: '' });
                         }
                       }}
@@ -980,73 +1074,29 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
+            {/* Step 4 */}
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">How can we reach you?</h3>
+                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Would you like a free strategy call? <span className="text-red-500">*</span></h3>
                 
                 <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-800 mb-2">Your Name <span className="text-red-500">*</span></label>
-                    <input 
-                      type="text" 
-                      value={formData.firstName}
-                      onChange={(e) => updateData({ firstName: e.target.value })}
-                      placeholder="John Doe"
-                      className={`w-full bg-slate-50 border-none ${errors.firstName ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
-                    />
-                    {errors.firstName && <p className="text-red-500 text-sm mt-2 font-bold">{errors.firstName}</p>}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-800 mb-2">Email Address <span className="text-red-500">*</span></label>
-                    <input 
-                      type="email" 
-                      value={formData.email}
-                      onChange={(e) => updateData({ email: e.target.value })}
-                      placeholder="john@example.com"
-                      className={`w-full bg-slate-50 border-none ${errors.email ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
-                    />
-                    {errors.email && <p className="text-red-500 text-sm mt-2 font-bold">{errors.email}</p>}
-                    <p className="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5 px-2">
-                       <Lock className="w-3.5 h-3.5 text-slate-400" />
-                       We will never send promotional emails or share your data. Purely for contact purposes.
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-800 mb-2">
-                      Phone Number {formData.wantsCall === 'yes' ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-medium">(Optional)</span>}
-                    </label>
-                    <input 
-                      type="tel" 
-                      value={formData.phone}
-                      onChange={(e) => updateData({ phone: e.target.value })}
-                      placeholder="+44 (555) 000-0000"
-                      className={`w-full bg-slate-50 border-none ${errors.phone ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
-                    />
-                    {errors.phone && <p className="text-red-500 text-sm mt-2 font-bold">{errors.phone}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-800 mb-3 mt-8 border-t border-slate-100 pt-8">Would you like a free strategy call? <span className="text-red-500">*</span></label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div 
-                        onClick={() => updateData({ wantsCall: 'yes' })}
-                        className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'yes' ? 'border-[#0314B0] bg-blue-50 text-[#0314B0] shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
-                      >
-                        <PhoneCall className="w-5 h-5" />
-                        Yes, let's talk
-                      </div>
-                      <div 
-                        onClick={() => updateData({ wantsCall: 'no', callDate: '', callTime: '' })}
-                        className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'no' ? 'border-slate-800 bg-slate-800 text-white shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
-                      >
-                        <Mail className="w-5 h-5" />
-                        No, just email me
-                      </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div 
+                      onClick={() => updateData({ wantsCall: 'yes' })}
+                      className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'yes' ? 'border-[#0314B0] bg-blue-50 text-[#0314B0] shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
+                    >
+                      <PhoneCall className="w-5 h-5" />
+                      Yes, let's talk
                     </div>
-                    {errors.wantsCall && <p className="text-red-500 text-sm mt-2 font-bold">{errors.wantsCall}</p>}
+                    <div 
+                      onClick={() => updateData({ wantsCall: 'no', callDate: '', callTime: '' })}
+                      className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'no' ? 'border-slate-800 bg-slate-800 text-white shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
+                    >
+                      <Mail className="w-5 h-5" />
+                      No, just email me
+                    </div>
                   </div>
+                  {errors.wantsCall && <p className="text-red-500 text-sm mt-2 font-bold text-center">{errors.wantsCall}</p>}
 
                   <AnimatePresence>
                     {formData.wantsCall === 'yes' && (
@@ -1057,6 +1107,25 @@ function ApplicationModal({ onClose }) {
                         className="overflow-hidden"
                       >
                         <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4">
+                          
+                          {/* If they didn't provide a phone on Step 1, make them provide it now! */}
+                          {!formData.phone && (
+                            <div className="mb-4 bg-white p-4 rounded-xl border border-red-200 shadow-sm">
+                              <label className="block text-sm font-extrabold text-slate-800 mb-2 flex items-center gap-2">
+                                <PhoneCall className="w-4 h-4 text-red-500" /> Phone Number <span className="text-red-500">*</span>
+                              </label>
+                              <p className="text-xs text-slate-500 mb-3">Please provide a phone number so we can reach you for the call.</p>
+                              <input 
+                                type="tel" 
+                                value={formData.phone}
+                                onChange={(e) => updateData({ phone: e.target.value })}
+                                placeholder="+44 (555) 000-0000"
+                                className={`w-full bg-slate-50 border-none ${errors.phone ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
+                              />
+                              {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-bold">{errors.phone}</p>}
+                            </div>
+                          )}
+
                           <div>
                             <label className="block text-sm font-extrabold text-slate-800 mb-2">Select a Date <span className="text-red-500">*</span></label>
                             <div className="relative">
@@ -1093,15 +1162,17 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
+            {/* Success Step 5 */}
             {step === 5 && (
               <motion.div key="step5" className="text-center py-16 relative overflow-visible h-full min-h-[300px] flex flex-col items-center justify-center">
                 
                 <div className="relative w-full h-32 flex items-center justify-center mb-6">
+                  {/* The Morphing Rocket - It receives layoutId="hero-rocket" from the header */}
                   <motion.div
                     layoutId="hero-rocket"
                     animate={ rocketStage === 'launched' 
-                      ? { y: -1000, scale: 0.5, opacity: 0 } 
-                      : { y: 0, scale: 2.5, opacity: 1 }     
+                      ? { y: -1000, scale: 0.5, opacity: 0 } // Flies out of the screen
+                      : { y: 0, scale: 2.5, opacity: 1 }     // Centers and grows large
                     }
                     transition={ rocketStage === 'launched' 
                       ? { duration: 1.2, ease: "easeIn" } 
@@ -1110,6 +1181,8 @@ function ApplicationModal({ onClose }) {
                     className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-[0_20px_50px_rgba(3,20,176,0.4)] absolute z-50"
                   >
                      <Rocket className="w-8 h-8 text-white" fill="currentColor" />
+                     
+                     {/* Fire appearing only when launched */}
                      {rocketStage === 'launched' && (
                        <motion.div 
                          initial={{ opacity: 0, scaleY: 0 }}
@@ -1120,6 +1193,7 @@ function ApplicationModal({ onClose }) {
                      )}
                   </motion.div>
 
+                  {/* The Big Blue Checkmark (Appears after rocket launches) */}
                   {rocketStage === 'launched' && (
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
@@ -1132,6 +1206,7 @@ function ApplicationModal({ onClose }) {
                   )}
                 </div>
 
+                {/* Text Reveal after the rocket flies away */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: rocketStage === 'launched' ? 1 : 0, y: rocketStage === 'launched' ? 0 : 30 }}
@@ -1156,6 +1231,7 @@ function ApplicationModal({ onClose }) {
           </AnimatePresence>
         </div>
 
+        {/* Modal Footer */}
         {step < 5 && (
           <div className="p-6 bg-white flex justify-between items-center z-10 relative border-t border-slate-50">
             {step > 1 ? (
@@ -1193,6 +1269,7 @@ function ApplicationModal({ onClose }) {
 function PortfolioCard({ project, className = "flex" }) {
   const [isHolding, setIsHolding] = useState(false);
 
+  // Prevent default drag behavior so the browser doesn't try to drag the image
   const preventDrag = (e) => e.preventDefault();
 
   return (
@@ -1226,14 +1303,20 @@ function PortfolioCard({ project, className = "flex" }) {
           className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} 
         />
         
+        {/* Overlay and Indicator */}
         <div className={`absolute inset-0 bg-[#0314B0]/0 transition-colors duration-500 z-10 flex flex-col items-center justify-end pb-4 sm:pb-6 ${isHolding ? 'opacity-0 pointer-events-none' : 'opacity-100 group-hover:bg-[#0314B0]/10'}`}>
+            {/* Always visible hold to preview pill with continuous finger animation */}
             <div className="bg-[#121626]/95 backdrop-blur-md text-white text-[11px] sm:text-xs font-extrabold px-3 sm:px-4 py-2.5 rounded-full flex items-center gap-2.5 shadow-2xl border border-white/10 relative transition-transform duration-300 transform group-hover:scale-105">
+              
               <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
+                 {/* Blue dot base */}
                  <motion.div 
                    animate={{ scale: [1, 0.7, 1] }}
                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                    className="absolute w-2.5 h-2.5 bg-[#4B83FF] rounded-full" 
                  />
+                 
+                 {/* Finger pressing animation */}
                  <motion.div
                    animate={{ scale: [1, 0.9, 1], y: [-6, 2, -6], rotate: [-5, 0, -5] }}
                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
@@ -1245,6 +1328,7 @@ function PortfolioCard({ project, className = "flex" }) {
                     </svg>
                  </motion.div>
               </div>
+
               <span className="tracking-wide">Hold to preview</span>
             </div>
         </div>
