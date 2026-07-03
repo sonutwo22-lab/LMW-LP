@@ -16,7 +16,6 @@ export default async function handler(req, res) {
 
   try {
     const { 
-      sessionId, isPartial, isAbandoned, lastCompletedStep, // <-- Tracking fields
       firstName, email, phone, businessName, 
       industry, primaryGoals, desiredFeatures, budget,
       wantsCall, callDate, callTime, eventId 
@@ -27,45 +26,8 @@ export default async function handler(req, res) {
       : 'No call requested';
 
     // -------------------------------------------------------------
-    // SCENARIO 1: PARTIAL OR ABANDONED LEADS (RESCUE MISSION)
-    // -------------------------------------------------------------
-    if (isPartial) {
-      if (isAbandoned) {
-        console.log(`⚠️ ABANDONED LEAD: Session ${sessionId} dropped off at Step ${lastCompletedStep}`);
-        
-        // Fire a "Rescue" email to yourself containing whatever they typed so far
-        await resend.emails.send({
-          from: 'Launch My Website <sales@launchmywebsite.agency>',
-          to: ['sales@launchmywebsite.agency'],
-          subject: `🚨 Rescue Lead: Abandoned at step ${lastCompletedStep}`,
-          html: `
-            <h2>Abandoned Project Application</h2>
-            <p>A user closed the form before finishing it. Here is the data we managed to capture:</p>
-            <hr />
-            <p><strong>Name:</strong> ${firstName || 'Not provided'}</p>
-            <p><strong>Email:</strong> ${email || 'Not provided'}</p>
-            <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-            <p><strong>Business Name:</strong> ${businessName || 'Not provided'}</p>
-            <p><strong>Industry:</strong> ${industry || 'Not provided'}</p>
-            <p><strong>Goals:</strong> ${primaryGoals || 'Not provided'}</p>
-            <p><strong>Features:</strong> ${desiredFeatures || 'Not provided'}</p>
-            <p><strong>Budget:</strong> ${budget || 'Not provided'}</p>
-          `,
-        });
-      } else {
-        // User clicked "Continue" - Silently track progress in console
-        console.log(`🔄 PROGRESS: Session ${sessionId} completed Step ${lastCompletedStep}`);
-      }
-
-      // Return 200 early so the frontend continues without triggering the final submission emails below
-      return res.status(200).json({ success: true, message: 'Partial state handled' });
-    }
-
-    // -------------------------------------------------------------
-    // SCENARIO 2: FULLY COMPLETED SUBMISSION (EMAIL 1 & 2)
-    // -------------------------------------------------------------
-
     // EMAIL 1: Send the raw lead data to YOUR business inbox
+    // -------------------------------------------------------------
     const notifyAdmin = resend.emails.send({
       from: 'Launch My Website <sales@launchmywebsite.agency>', 
       to: ['sales@launchmywebsite.agency'], 
@@ -85,7 +47,9 @@ export default async function handler(req, res) {
       `,
     });
 
+    // -------------------------------------------------------------
     // EMAIL 2: Send the branded auto-reply to the CUSTOMER
+    // -------------------------------------------------------------
     const notifyCustomer = resend.emails.send({
       from: 'Launch My Website <sales@launchmywebsite.agency>',
       to: [email], 
@@ -135,7 +99,6 @@ export default async function handler(req, res) {
     const PIXEL_ID = '1713657916510847';
     const ACCESS_TOKEN = process.env.META_ACCESS_TOKEN; 
 
-    // Optional Check: Only run if the token is set to prevent crashes in dev environments
     if (ACCESS_TOKEN) {
       await fetch(`https://graph.facebook.com/v20.0/${PIXEL_ID}/events`, {
         method: 'POST',
