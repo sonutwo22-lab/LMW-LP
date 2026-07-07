@@ -4,10 +4,235 @@ import {
   Rocket, ChevronRight, ChevronLeft, ChevronDown,
   Store, CalendarClock, Briefcase, Palette, Code, 
   Smartphone, Zap, Shield, Star, Users, X, ArrowRight,
-  Quote, Check, VolumeX, Mail, PhoneCall, Lock
+  Quote, Check, VolumeX, Mail, PhoneCall, Lock, ArrowLeft
 } from 'lucide-react';
 
+// --- MAIN ROUTER APP ---
 export default function App() {
+  const [currentRoute, setCurrentRoute] = useState('home');
+
+  // Simple Hash Router for single-file deployment
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#privacy-policy') {
+        setCurrentRoute('privacy');
+      } else {
+        setCurrentRoute('home');
+      }
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Check on load
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  return currentRoute === 'privacy' ? <PrivacyPolicy /> : <Home />;
+}
+
+// --- PRIVACY POLICY PAGE ---
+function PrivacyPolicy() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 overflow-x-hidden relative selection:bg-blue-200 selection:text-blue-900" style={{ fontFamily: "'Inter', sans-serif" }}>
+      
+      {/* Background Elements (Matching Home Page) */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden flex justify-center items-center">
+        <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-blue-100/40 blur-[120px]"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-100/40 blur-[120px]"></div>
+      </div>
+
+      {/* Glassy Floating Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4">
+        <nav className="w-full max-w-6xl rounded-full px-6 py-3 flex justify-between items-center bg-white/80 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white">
+          <a href="#" className="flex items-center gap-3 cursor-pointer group">
+            <div className="bg-[#001B70] p-2 rounded-full shadow-md group-hover:scale-105 transition-transform">
+              <img src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/header-logo.webp" alt="Logo" className="h-6 w-auto object-contain" />
+            </div>
+            <span className="font-extrabold text-slate-900 tracking-tight hidden sm:block title-font">Launch My Website</span>
+          </a>
+          
+          <a 
+            href="#"
+            className="px-5 py-2 rounded-full bg-slate-100 text-slate-900 font-extrabold text-sm hover:bg-[#0314B0] hover:text-white transition-colors flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </a>
+        </nav>
+      </div>
+
+      <main className="relative z-10 pt-32 pb-40 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Animated Hero Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-16"
+        >
+          <p className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-4">Legal & Compliance</p>
+          <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight mb-6 title-font uppercase">
+            Privacy <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0314B0] to-blue-500">Policy</span>
+          </h1>
+          <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">Last Updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+        </motion.div>
+
+        {/* Styled Content Card (Matching the Benefits section cards) */}
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+          className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white relative group"
+        >
+          {/* Soft outer glow */}
+          <div className="absolute -inset-4 bg-gradient-to-b from-black/5 to-transparent rounded-[3.5rem] blur-xl opacity-50 -z-10"></div>
+          
+          <div className="space-y-12 text-lg text-slate-600 font-medium leading-relaxed">
+            
+            <section>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <Shield className="w-6 h-6 text-[#0314B0]" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 title-font uppercase tracking-tight">1. Introduction</h2>
+              </div>
+              <p>Welcome to Launch My Website ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website (regardless of where you visit it from) and tell you about your privacy rights and how the law protects you.</p>
+            </section>
+
+            <div className="w-full h-px bg-slate-100"></div>
+
+            <section>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <Users className="w-6 h-6 text-[#0314B0]" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 title-font uppercase tracking-tight">2. The Data We Collect</h2>
+              </div>
+              <p className="mb-4">Personal data, or personal information, means any information about an individual from which that person can be identified. We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows:</p>
+              
+              <ul className="space-y-3 bg-slate-50 p-6 rounded-2xl border border-slate-100 mt-6">
+                <li className="flex gap-3"><Check className="w-6 h-6 text-[#0314B0] shrink-0" /> <span><strong>Identity Data:</strong> includes first name, last name, username or similar identifier.</span></li>
+                <li className="flex gap-3"><Check className="w-6 h-6 text-[#0314B0] shrink-0" /> <span><strong>Contact Data:</strong> includes email address and telephone numbers.</span></li>
+                <li className="flex gap-3"><Check className="w-6 h-6 text-[#0314B0] shrink-0" /> <span><strong>Technical Data:</strong> includes internet protocol (IP) address, browser type and version.</span></li>
+                <li className="flex gap-3"><Check className="w-6 h-6 text-[#0314B0] shrink-0" /> <span><strong>Usage Data:</strong> includes information about how you use our website, products, and services.</span></li>
+              </ul>
+            </section>
+
+            <div className="w-full h-px bg-slate-100"></div>
+
+            <section>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <Briefcase className="w-6 h-6 text-[#0314B0]" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 title-font uppercase tracking-tight">3. How We Use Your Data</h2>
+              </div>
+              <p className="mb-4">We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:</p>
+              <ul className="list-none space-y-4 mt-6">
+                <li className="flex gap-4 items-start">
+                   <div className="w-2 h-2 rounded-full bg-[#0314B0] mt-2.5 shrink-0"></div>
+                   <p>Where we need to perform the contract we are about to enter into or have entered into with you (e.g., providing a web design quote or scheduling a strategy call).</p>
+                </li>
+                <li className="flex gap-4 items-start">
+                   <div className="w-2 h-2 rounded-full bg-[#0314B0] mt-2.5 shrink-0"></div>
+                   <p>Where it is necessary for our legitimate interests (or those of a third party) and your interests and fundamental rights do not override those interests.</p>
+                </li>
+                <li className="flex gap-4 items-start">
+                   <div className="w-2 h-2 rounded-full bg-[#0314B0] mt-2.5 shrink-0"></div>
+                   <p>Where we need to comply with a legal obligation.</p>
+                </li>
+              </ul>
+            </section>
+
+            <div className="w-full h-px bg-slate-100"></div>
+
+            <section>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <Lock className="w-6 h-6 text-[#0314B0]" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 title-font uppercase tracking-tight">4. Data Security</h2>
+              </div>
+              <p>We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used, or accessed in an unauthorized way, altered, or disclosed. In addition, we limit access to your personal data to those employees, agents, contractors, and other third parties who have a business need to know. They will only process your personal data on our instructions and they are subject to a duty of confidentiality.</p>
+            </section>
+
+            <div className="w-full h-px bg-slate-100"></div>
+
+            <section>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <Mail className="w-6 h-6 text-[#0314B0]" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 title-font uppercase tracking-tight">5. Contact Us</h2>
+              </div>
+              <p className="mb-8">If you have any questions about this privacy policy or our privacy practices, please contact us at:</p>
+              
+              <div className="bg-gradient-to-br from-[#0314B0] to-[#001B70] p-8 rounded-3xl text-white shadow-[0_15px_30px_rgba(3,20,176,0.2)] flex flex-col sm:flex-row items-center justify-between gap-6 transform hover:scale-[1.02] transition-transform duration-300">
+                <div>
+                  <p className="font-black text-xl mb-1 title-font">Launch My Website</p>
+                  <p className="text-blue-200 font-medium text-sm">Data Protection Officer</p>
+                </div>
+                <a href="mailto:help@launchmywebsite.agency" className="px-6 py-3.5 rounded-full bg-white text-[#0314B0] font-extrabold text-sm hover:shadow-[0_8px_20px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                  <Mail className="w-4 h-4" /> help@launchmywebsite.agency
+                </a>
+              </div>
+            </section>
+
+          </div>
+        </motion.div>
+      </main>
+      
+      <Footer />
+    </div>
+  );
+}
+
+// --- SHARED FOOTER ---
+function Footer() {
+  return (
+    <footer className="bg-[#121626] text-slate-400 py-16 border-t border-slate-800 relative z-10 pb-32 md:pb-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div>
+           <div className="flex items-center gap-3 mb-6">
+             <div className="bg-[#0314B0] p-2 rounded-full shadow-md">
+               <img src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/header-logo.webp" alt="Logo" className="h-6 w-auto object-contain" />
+             </div>
+             <span className="font-extrabold text-white tracking-tight title-font text-xl" style={{ fontFamily: "'Sora', sans-serif" }}>Launch My Website</span>
+           </div>
+           <p className="text-sm font-medium leading-relaxed max-w-sm mb-8 text-slate-400">Premium, custom web design at 50-60% off standard agency pricing. We help entrepreneurs jumpstart their business with high-converting websites.</p>
+           <div className="flex items-center gap-4">
+             <a href="https://www.facebook.com/profile.php?id=61591235288039" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
+               <FacebookIcon className="w-5 h-5" />
+             </a>
+             <a href="https://instagram.com/launchmywebsite.agency" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
+               <InstagramIcon className="w-5 h-5" />
+             </a>
+             <div className="w-px h-6 bg-slate-700 mx-2"></div>
+             <a href="#privacy-policy" className="text-sm font-medium hover:text-white transition-colors">Privacy Policy</a>
+           </div>
+        </div>
+        <div className="flex flex-col md:items-end justify-center gap-6">
+           <div className="text-left md:text-right">
+             <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Support</p>
+             <a href="mailto:help@launchyourwebsite.agency" className="text-white font-bold text-lg hover:text-[#4B83FF] transition-colors">help@launchyourwebsite.agency</a>
+           </div>
+           <div className="text-left md:text-right">
+             <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Enquiries & Sales</p>
+             <a href="mailto:sales@launchmywebsite.agency" className="text-white font-bold text-lg hover:text-[#4B83FF] transition-colors">sales@launchmywebsite.agency</a>
+           </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+
+// --- ORIGINAL HOME PAGE (Your existing code adjusted slightly to share the footer) ---
+function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNav, setShowNav] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
@@ -17,16 +242,14 @@ export default function App() {
   const hasAutoPaused = useRef(false);
   const videoRef = useRef(null);
 
-  // Force programmatic autoplay on load/reload
   useEffect(() => {
     const attemptPlay = async () => {
       if (videoRef.current) {
         try {
-          // Play muted first to guarantee autoplay on all browsers (VSL style)
           videoRef.current.muted = true;
           await videoRef.current.play();
         } catch (error) {
-          console.warn("Browser blocked autoplay. The user must interact first.", error);
+          console.warn("Browser blocked autoplay.", error);
         }
       }
     };
@@ -36,7 +259,6 @@ export default function App() {
   }, []);
 
   const handleVideoTimeUpdate = (e) => {
-    // 63 seconds = 1 minute 3 seconds
     if (!hasAutoPaused.current && e.target.currentTime >= 63) {
       e.target.pause();
       hasAutoPaused.current = true;
@@ -46,13 +268,11 @@ export default function App() {
   const handleVideoInteraction = () => {
     if (videoRef.current) {
       if (isMuted) {
-        // First interaction: Unmute, restart the video, and hide the overlay
         videoRef.current.muted = false;
         videoRef.current.currentTime = 0;
         videoRef.current.play();
         setIsMuted(false);
       } else {
-        // Subsequent interactions: standard play/pause toggle
         if (videoRef.current.paused) {
           videoRef.current.play();
         } else {
@@ -62,27 +282,20 @@ export default function App() {
     }
   };
 
-  // Dynamic counter increment based on time (increments by ~7 every day)
   useEffect(() => {
     const baseDate = new Date('2024-01-01T00:00:00Z').getTime();
     const now = new Date().getTime();
     const daysPassed = Math.max(0, Math.floor((now - baseDate) / (1000 * 60 * 60 * 24)));
-    
-    // Starts around 6231 and deterministically grows every day
     const dailyIncrement = Math.floor(daysPassed * 7.5);
     setWebsiteCount(6231 + dailyIncrement);
   }, []);
 
-  // Handle scroll for floating navbar
   useEffect(() => {
-    const handleScroll = () => {
-      setShowNav(window.scrollY > 700);
-    };
+    const handleScroll = () => setShowNav(window.scrollY > 700);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Inject Favicon dynamically and force light mode
   useEffect(() => {
     let link = document.querySelector("link[rel~='icon']");
     if (!link) {
@@ -93,7 +306,6 @@ export default function App() {
     link.href = 'https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/favicon.webp';
     document.title = "Launch My Website | Premium Custom Web Design";
 
-    // Force light mode tags to prevent mobile browser dark themes and extensions
     const tags = [
       { name: 'color-scheme', content: 'only light' },
       { name: 'supported-color-schemes', content: 'light' },
@@ -115,12 +327,8 @@ export default function App() {
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 overflow-x-hidden relative selection:bg-blue-200 selection:text-blue-900" style={{ fontFamily: "'Inter', sans-serif" }}>
       
       <style dangerouslySetInnerHTML={{__html: `
-        :root { 
-          color-scheme: only light !important; 
-        }
-        html, body {
-          background-color: #F8FAFC !important;
-        }
+        :root { color-scheme: only light !important; }
+        html, body { background-color: #F8FAFC !important; scroll-behavior: smooth; }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap');
         h1, h2, h3, h4, h5, h6, .title-font { font-family: 'Sora', sans-serif !important; }
         button { font-family: 'Sora', sans-serif !important; }
@@ -168,6 +376,7 @@ export default function App() {
       </div>
 
       <main className="relative z-10 pt-6 md:pt-8 pb-40">
+        {/* HERO SECTION */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-20 flex flex-col items-center">
           
           <motion.div 
@@ -221,12 +430,8 @@ export default function App() {
                 onTimeUpdate={handleVideoTimeUpdate}
                 className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105"
               >
-                {/* WebM loads first for maximum speed on Chrome/Android */}
                 <source src="https://launchmywebsite.agency/Whero.webm" type="video/webm" />
-                
-                {/* MP4 fallback for perfect compatibility on Safari/iOS */}
                 <source src="https://launchmywebsite.agency/Mhero.mp4" type="video/mp4" />
-                
                 Your browser does not support the video tag.
               </video>
               
@@ -265,6 +470,7 @@ export default function App() {
           </motion.div>
         </section>
 
+        {/* DETAILS SECTION */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col md:flex-row items-center gap-12 lg:gap-20">
           <div className="w-full md:w-1/2 relative">
              <div className="absolute -top-8 -left-8 w-24 h-24 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-pulse"></div>
@@ -302,6 +508,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* STATS */}
         <section className="bg-white border-y border-slate-100 py-16">
           <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
             <div className="flex flex-col items-center pt-6 md:pt-0">
@@ -324,6 +531,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* CTA BANNER */}
         <section className="bg-gradient-to-br from-[#0314B0] to-[#001B70] text-white py-24 relative overflow-hidden">
           <div className="absolute -bottom-10 -left-10 w-48 h-48 opacity-20 transform rotate-45">
              <Rocket className="w-full h-full text-white" />
@@ -347,6 +555,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* PORTFOLIO */}
         <section id="portfolio" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
              <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">Our Work</h2>
@@ -371,7 +580,6 @@ export default function App() {
                 className={!showAllProjects && i >= 4 ? 'hidden md:flex' : 'flex'}
               />
             ))}
-            
           </motion.div>
 
           {!showAllProjects && (
@@ -386,7 +594,7 @@ export default function App() {
           )}
         </section>
 
-        {/* Extra Trust Elements Section */}
+        {/* TRUST BANNER */}
         <div className="max-w-6xl mx-auto px-4 mt-24 mb-[-4rem] relative z-20">
           <div className="bg-gradient-to-br from-[#0314B0] to-[#001B70] rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white shadow-[0_20px_50px_rgba(3,20,176,0.2)] relative overflow-hidden">
             <div className="absolute top-[-50%] right-[-10%] w-64 h-64 bg-blue-400/30 blur-[80px] rounded-full pointer-events-none"></div>
@@ -415,6 +623,7 @@ export default function App() {
           </div>
         </div>
 
+        {/* BENEFITS */}
         <section id="benefits" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
           <div className="text-center mb-16">
              <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">The Advantage</h2>
@@ -441,6 +650,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* REVIEWS */}
         <section id="reviews" className="py-24 overflow-hidden bg-white">
           <div className="text-center mb-16 px-4">
             <h2 className="text-[#0314B0] font-bold tracking-widest uppercase text-sm mb-3">Client Success</h2>
@@ -457,14 +667,7 @@ export default function App() {
                     { name: "Elena Rodriguez", quote: "Our online orders doubled within a month. The design is beautiful and easy to use." },
                     { name: "David Chen", quote: "Professional, fast, and exactly what we needed to launch our new brand." },
                     { name: "Rachel Adams", quote: "Best investment we've made. The site pays for itself in new leads." },
-                    { name: "James Wilson", quote: "Outstanding communication and a final product that blew us away." },
-                    { name: "Olivia Taylor", quote: "They truly understand conversion optimization. Sales are up 40%." },
-                    { name: "Michael Brown", quote: "Fast turnaround without sacrificing any quality. Highly recommend." },
-                    { name: "Sophia Martinez", quote: "A completely stress-free experience. The team handled everything perfectly." },
-                    { name: "William Davis", quote: "Sleek, modern, and fast. Everything we asked for and more." },
-                    { name: "Emily White", quote: "Our old site was a mess. They transformed it into a lead-generation machine." },
-                    { name: "Alexander Moore", quote: "Top-tier design work. They made our small business look like an enterprise." },
-                    { name: "Jessica Taylor", quote: "Incredible attention to detail. We get compliments on our site daily." }
+                    { name: "James Wilson", quote: "Outstanding communication and a final product that blew us away." }
                   ].map((testimonial, i) => (
                     <div key={`${arrayIndex}-${i}`} className="inline-block w-[350px] whitespace-normal bg-white border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.04)] p-8 rounded-[2rem] mx-4 relative">
                       <div className="absolute -top-6 left-8 w-12 h-12 rounded-full bg-gradient-to-br from-[#0314B0] to-blue-400 flex items-center justify-center font-bold text-white text-lg shadow-lg border-4 border-white">
@@ -490,38 +693,9 @@ export default function App() {
 
       </main>
 
-      <footer className="bg-[#121626] text-slate-400 py-16 border-t border-slate-800 relative z-10 pb-32 md:pb-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div>
-             <div className="flex items-center gap-3 mb-6">
-               <div className="bg-[#0314B0] p-2 rounded-full shadow-md">
-                 <img src="https://admin.launchmywebsite.agency/wp-content/uploads/2026/06/header-logo.webp" alt="Logo" className="h-6 w-auto object-contain" />
-               </div>
-               <span className="font-extrabold text-white tracking-tight title-font text-xl">Launch My Website</span>
-             </div>
-             <p className="text-sm font-medium leading-relaxed max-w-sm mb-8 text-slate-400">Premium, custom web design at 50-60% off standard agency pricing. We help entrepreneurs jumpstart their business with high-converting websites.</p>
-             <div className="flex gap-4">
-               <a href="https://www.facebook.com/profile.php?id=61591235288039" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
-                 <FacebookIcon className="w-5 h-5" />
-               </a>
-               <a href="https://instagram.com/launchmywebsite.agency" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#0314B0] hover:text-white transition-all shadow-sm">
-                 <InstagramIcon className="w-5 h-5" />
-               </a>
-             </div>
-          </div>
-          <div className="flex flex-col md:items-end justify-center gap-6">
-             <div className="text-left md:text-right">
-               <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Support</p>
-               <a href="mailto:help@launchyourwebsite.agency" className="text-white font-bold text-lg hover:text-[#4B83FF] transition-colors">help@launchyourwebsite.agency</a>
-             </div>
-             <div className="text-left md:text-right">
-               <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Enquiries & Sales</p>
-               <a href="mailto:sales@launchmywebsite.agency" className="text-white font-bold text-lg hover:text-[#4B83FF] transition-colors">sales@launchmywebsite.agency</a>
-             </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
+      {/* FLOATING ACTION BUTTON (MOBILE) */}
       <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pointer-events-none flex justify-center pb-6 md:pb-8">
         <motion.button
           initial={{ y: 100, opacity: 0 }}
@@ -555,14 +729,14 @@ export default function App() {
 
       <AnimatePresence>
         {isModalOpen && (
-          <ApplicationModal 
-            onClose={() => setIsModalOpen(false)} 
-          />
+          <ApplicationModal onClose={() => setIsModalOpen(false)} />
         )}
       </AnimatePresence>
     </div>
   );
 }
+
+// --- SUB-COMPONENTS (From your original code) ---
 
 function ApplicationModal({ onClose }) {
   const [step, setStep] = useState(1);
@@ -571,59 +745,12 @@ function ApplicationModal({ onClose }) {
   const [shake, setShake] = useState(false);
   const [showOtherFeature, setShowOtherFeature] = useState(false);
 
-  // Email First Strategy: We now collect Name, Email, and Phone on Step 1
   const [formData, setFormData] = useState({
-    firstName: '',
-    email: '',
-    phone: '',
-    businessName: '',
-    category: '',
-    otherCategory: '',
-    purpose: [],
-    features: [],
-    otherFeature: '',
-    budget: '',
-    wantsCall: '', 
-    callDate: '',
-    callTime: ''
+    businessName: '', category: '', otherCategory: '', purpose: [], features: [],
+    otherFeature: '', budget: '', firstName: '', email: '', phone: '',
+    wantsCall: '', callDate: '', callTime: ''
   });
-
   const [errors, setErrors] = useState({});
-  const sessionIdRef = useRef(crypto.randomUUID());
-
-  const savePartialLead = async (currentStep, isAbandoned = false) => {
-    // Only capture if they have filled at least their email or name
-    if (!formData.email && !formData.firstName) return;
-
-    try {
-      let finalFeatures = [...formData.features];
-      if (formData.otherFeature && formData.otherFeature.trim() !== '') {
-        finalFeatures.push(`Custom: ${formData.otherFeature.trim()}`);
-      }
-
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: sessionIdRef.current,
-          isPartial: true,
-          isAbandoned: isAbandoned,
-          lastCompletedStep: currentStep,
-          firstName: formData.firstName || "Pending",
-          email: formData.email || "Pending",
-          phone: formData.phone || "Pending",
-          businessName: formData.businessName || "Pending",
-          industry: formData.category === 'Other' ? formData.otherCategory : (formData.category || "Pending"),
-          primaryGoals: formData.purpose.length > 0 ? formData.purpose.join(', ') : "Pending",
-          desiredFeatures: finalFeatures.length > 0 ? finalFeatures.join(', ') : "Pending",
-          budget: formData.budget || "Pending",
-          wantsCall: formData.wantsCall || "Pending"
-        })
-      });
-    } catch (e) {
-      console.warn("Partial capture ping failed");
-    }
-  };
 
   const updateData = (fields) => {
     setFormData(prev => ({ ...prev, ...fields }));
@@ -640,8 +767,6 @@ function ApplicationModal({ onClose }) {
   const validateStep = (currentStep) => {
     let newErrors = {};
     if (currentStep === 1) {
-      if (!formData.firstName.trim()) newErrors.firstName = "First name is strictly required.";
-      if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "A valid email is absolutely required.";
       if (!formData.businessName.trim()) newErrors.businessName = "Business name is required.";
       if (!formData.category) newErrors.category = "Please select an industry.";
       if (formData.category === 'Other' && (!formData.otherCategory || !formData.otherCategory.trim())) {
@@ -652,6 +777,8 @@ function ApplicationModal({ onClose }) {
     } else if (currentStep === 3) {
       if (!formData.budget || !formData.budget.trim()) newErrors.budget = "Please enter your desired budget.";
     } else if (currentStep === 4) {
+      if (!formData.firstName.trim()) newErrors.firstName = "First name is strictly required.";
+      if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "A valid email is absolutely required.";
       if (!formData.wantsCall) newErrors.wantsCall = "Please let us know your call preference.";
       
       if (formData.wantsCall === 'yes') {
@@ -671,24 +798,21 @@ function ApplicationModal({ onClose }) {
 
   const handleNext = () => {
     if (validateStep(step)) {
-      
-      // --- META PIXEL TRACKING: Step Completion ---
       if (window.fbq) {
-        const stepEventId = crypto.randomUUID(); 
         window.fbq('trackCustom', `Form_Step_${step}_Complete`, {
           content_name: `Completed Application Step ${step}`
-        }, { eventID: stepEventId });
+        }, { eventID: crypto.randomUUID() });
       }
-      // --------------------------------------------
-
-      savePartialLead(step, false); // Save progress in background
       setStep(prev => prev + 1);
     }
   };
 
   const handleModalClose = () => {
-    if (step < 5) {
-      savePartialLead(step, true); // Mark as abandoned if closed early
+    if (step < 5 && window.fbq) {
+      window.fbq('trackCustom', 'Form_Abandoned', {
+        content_name: `Abandoned Application on Step ${step}`,
+        step: step
+      }, { eventID: crypto.randomUUID() });
     }
     onClose();
   };
@@ -701,13 +825,10 @@ function ApplicationModal({ onClose }) {
   const handleSubmit = async () => {
     if (validateStep(4)) {
       setIsSubmitting(true);
-      
       const eventId = crypto.randomUUID(); 
 
       try {
-        if (window.fbq) {
-          window.fbq('track', 'SubmitApplication', {}, { eventID: eventId });
-        }
+        if (window.fbq) window.fbq('track', 'SubmitApplication', {}, { eventID: eventId });
 
         let finalFeatures = [...formData.features];
         if (formData.otherFeature && formData.otherFeature.trim() !== '') {
@@ -715,9 +836,6 @@ function ApplicationModal({ onClose }) {
         }
 
         const submissionPayload = {
-          sessionId: sessionIdRef.current,
-          isPartial: false,
-          isAbandoned: false,
           firstName: formData.firstName,
           email: formData.email,
           phone: formData.phone || "Not provided",
@@ -738,14 +856,11 @@ function ApplicationModal({ onClose }) {
             body: JSON.stringify(submissionPayload)
         });
 
-        if (!response.ok) throw new Error("Serverless API failed");
+        if (!response.ok) throw new Error("API failed");
 
         setRocketStage('center');
         setStep(5);
-        
-        setTimeout(() => {
-          setRocketStage('launched');
-        }, 1200);
+        setTimeout(() => setRocketStage('launched'), 1200);
 
       } catch (err) {
         console.error("Submission failed", err);
@@ -758,14 +873,9 @@ function ApplicationModal({ onClose }) {
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-
     if (window.fbq) {
-      const startEventId = crypto.randomUUID(); 
-      window.fbq('trackCustom', 'FormStart', {
-        content_name: 'Project Application Modal'
-      }, { eventID: startEventId });
+      window.fbq('trackCustom', 'FormStart', { content_name: 'Project Application Modal' }, { eventID: crypto.randomUUID() });
     }
-
     return () => { document.body.style.overflow = 'auto'; };
   }, []);
 
@@ -777,9 +887,7 @@ function ApplicationModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={handleModalClose}
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
       />
@@ -795,14 +903,10 @@ function ApplicationModal({ onClose }) {
         <div className="flex justify-between items-center p-6 bg-white relative z-10 border-b border-slate-50">
           <div className="flex items-center gap-4 h-12">
              {step < 5 && (
-               <motion.div 
-                 layoutId="hero-rocket"
-                 className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-lg relative z-50"
-               >
+               <motion.div layoutId="hero-rocket" className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-lg relative z-50">
                  <Rocket className="w-6 h-6 text-white" fill="currentColor" />
                </motion.div>
              )}
-            
             <AnimatePresence>
               {step < 5 && (
                 <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col">
@@ -812,7 +916,6 @@ function ApplicationModal({ onClose }) {
               )}
             </AnimatePresence>
           </div>
-
           {step < 5 && (
             <button onClick={handleModalClose} className="text-slate-400 hover:text-slate-800 transition-colors bg-slate-50 p-2 rounded-full hover:bg-slate-100">
               <X className="w-5 h-5" />
@@ -837,61 +940,18 @@ function ApplicationModal({ onClose }) {
             {/* Step 1 */}
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Let's get to know you</h3>
-                
+                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Let's start with your business details</h3>
                 <div className="space-y-6">
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-extrabold text-slate-800 mb-2">Your Name <span className="text-red-500">*</span></label>
-                      <input 
-                        type="text" 
-                        value={formData.firstName}
-                        onChange={(e) => updateData({ firstName: e.target.value })}
-                        placeholder="John Doe"
-                        className={`w-full bg-slate-50 border-none ${errors.firstName ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
-                      />
-                      {errors.firstName && <p className="text-red-500 text-sm mt-2 font-bold">{errors.firstName}</p>}
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-extrabold text-slate-800 mb-2">Email Address <span className="text-red-500">*</span></label>
-                      <input 
-                        type="email" 
-                        value={formData.email}
-                        onChange={(e) => updateData({ email: e.target.value })}
-                        placeholder="john@example.com"
-                        className={`w-full bg-slate-50 border-none ${errors.email ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
-                      />
-                      {errors.email && <p className="text-red-500 text-sm mt-2 font-bold">{errors.email}</p>}
-                    </div>
-                  </div>
-
                   <div>
-                    <label className="block text-sm font-extrabold text-slate-800 mb-2">
-                      Phone Number <span className="text-slate-400 font-medium">(Optional for now)</span>
-                    </label>
-                    <input 
-                      type="tel" 
-                      value={formData.phone}
-                      onChange={(e) => updateData({ phone: e.target.value })}
-                      placeholder="+44 (555) 000-0000"
-                      className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg"
-                    />
-                  </div>
-
-                  <div className="pt-6 border-t border-slate-100">
                     <label className="block text-sm font-extrabold text-slate-800 mb-2">Business / Project Name <span className="text-red-500">*</span></label>
                     <input 
-                      type="text" 
-                      value={formData.businessName}
+                      type="text" value={formData.businessName}
                       onChange={(e) => updateData({ businessName: e.target.value })}
                       placeholder="e.g. Acme Innovations"
                       className={`w-full bg-slate-50 border-none ${errors.businessName ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
                     />
                     {errors.businessName && <p className="text-red-500 text-sm mt-2 font-bold">{errors.businessName}</p>}
                   </div>
-                  
                   <div>
                     <label className="block text-sm font-extrabold text-slate-800 mb-2">Industry / Category <span className="text-red-500">*</span></label>
                     <div className="relative">
@@ -912,25 +972,16 @@ function ApplicationModal({ onClose }) {
                         <option value="Portfolio / Creative">Portfolio / Creative</option>
                         <option value="Other">Other</option>
                       </select>
-                      <div className="absolute inset-y-0 right-6 flex items-center pointer-events-none text-slate-400">
-                        <ChevronRight className="w-5 h-5 rotate-90" />
-                      </div>
+                      <div className="absolute inset-y-0 right-6 flex items-center pointer-events-none text-slate-400"><ChevronRight className="w-5 h-5 rotate-90" /></div>
                     </div>
                     {errors.category && <p className="text-red-500 text-sm mt-2 font-bold">{errors.category}</p>}
                   </div>
-
                   <AnimatePresence>
                     {formData.category === 'Other' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                        className="overflow-hidden"
-                      >
+                      <motion.div initial={{ opacity: 0, height: 0, marginTop: 0 }} animate={{ opacity: 1, height: 'auto', marginTop: 24 }} exit={{ opacity: 0, height: 0, marginTop: 0 }} className="overflow-hidden">
                         <label className="block text-sm font-extrabold text-slate-800 mb-2">Describe your industry <span className="text-red-500">*</span></label>
                         <input 
-                          type="text" 
-                          value={formData.otherCategory}
+                          type="text" value={formData.otherCategory}
                           onChange={(e) => updateData({ otherCategory: e.target.value })}
                           placeholder="e.g. Custom 3D Printing"
                           className={`w-full bg-slate-50 border-none ${errors.otherCategory ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
@@ -947,7 +998,6 @@ function ApplicationModal({ onClose }) {
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">What is the primary goal? <span className="text-red-500">*</span></h3>
-                
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { id: 'E-commerce', icon: Store, title: 'Sell Products', desc: 'Full online store with checkout' },
@@ -959,12 +1009,7 @@ function ApplicationModal({ onClose }) {
                     return (
                       <div 
                         key={goal.id}
-                        onClick={() => {
-                          const newPurposes = isSelected 
-                            ? formData.purpose.filter(p => p !== goal.id)
-                            : [...(formData.purpose || []), goal.id];
-                          updateData({ purpose: newPurposes });
-                        }}
+                        onClick={() => updateData({ purpose: isSelected ? formData.purpose.filter(p => p !== goal.id) : [...(formData.purpose || []), goal.id] })}
                         className={`cursor-pointer p-6 rounded-3xl transition-all duration-300 ${isSelected ? 'bg-[#0314B0] shadow-[0_10px_20px_rgba(3,20,176,0.2)] scale-[1.02]' : 'bg-slate-50 hover:bg-slate-100'}`}
                       >
                         <div className="flex justify-between items-start mb-4">
@@ -991,35 +1036,22 @@ function ApplicationModal({ onClose }) {
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Scope & Budget</h3>
-                
                 <div className="space-y-8">
                   <div>
                     <label className="block text-sm font-extrabold text-slate-800 mb-4">Select desired addons & features (Optional)</label>
                     <div className="flex flex-wrap gap-3">
-                      {[
-                        'Payment Gateway', 'Custom Animations', 'Live Chat (WhatsApp/etc)', 
-                        'Blog / CMS', 'User Login & Accounts', 'SEO Optimization', 
-                        'Multilingual', 'CRM Integration', 'Newsletter Setup', 
-                        'Analytics Dashboard', 'Advanced Search', 'Booking System'
-                      ].map((feature) => {
+                      {['Payment Gateway', 'Custom Animations', 'Live Chat', 'Blog / CMS', 'User Login & Accounts', 'SEO Optimization', 'Multilingual', 'CRM Integration', 'Newsletter Setup'].map((feature) => {
                         const isSelected = formData.features?.includes(feature);
                         return (
                           <div 
                             key={feature}
-                            onClick={() => {
-                              const newFeatures = isSelected 
-                                ? formData.features.filter(f => f !== feature)
-                                : [...(formData.features || []), feature];
-                              updateData({ features: newFeatures });
-                            }}
+                            onClick={() => updateData({ features: isSelected ? formData.features.filter(f => f !== feature) : [...(formData.features || []), feature] })}
                             className={`cursor-pointer px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 ${isSelected ? 'bg-[#0314B0] text-white shadow-[0_8px_15px_rgba(3,20,176,0.2)] scale-[1.02]' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                           >
                             {feature}
                           </div>
                         )
                       })}
-                      
-                      {/* Dynamic 'Add More Features' Button */}
                       <div 
                         onClick={() => setShowOtherFeature(!showOtherFeature)}
                         className={`cursor-pointer px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border ${showOtherFeature ? 'bg-[#0314B0] text-white border-[#0314B0] shadow-[0_8px_15px_rgba(3,20,176,0.2)] scale-[1.02]' : 'bg-transparent text-slate-500 border-dashed border-slate-300 hover:bg-slate-50 hover:text-slate-700'}`}
@@ -1027,19 +1059,11 @@ function ApplicationModal({ onClose }) {
                         + Add more features
                       </div>
                     </div>
-                    
-                    {/* Expanding Text Field for Custom Features */}
                     <AnimatePresence>
                       {showOtherFeature && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                          animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                          className="overflow-hidden"
-                        >
+                        <motion.div initial={{ opacity: 0, height: 0, marginTop: 0 }} animate={{ opacity: 1, height: 'auto', marginTop: 16 }} exit={{ opacity: 0, height: 0, marginTop: 0 }} className="overflow-hidden">
                           <input 
-                            type="text" 
-                            value={formData.otherFeature}
+                            type="text" value={formData.otherFeature}
                             onChange={(e) => updateData({ otherFeature: e.target.value })}
                             placeholder="e.g. 3D Model Viewer, Interactive Map..."
                             className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm"
@@ -1052,18 +1076,10 @@ function ApplicationModal({ onClose }) {
                   <div>
                     <label className="block text-sm font-extrabold text-slate-800 mb-4">Do you have a budget in mind? <span className="text-red-500">*</span></label>
                     <input 
-                      type="text" 
-                      value={formData.budget}
+                      type="text" value={formData.budget}
                       onChange={(e) => {
-                        // Extract only digits from the input
                         const numericValue = e.target.value.replace(/\D/g, '');
-                        if (numericValue) {
-                          // Format with commas and prepend the Pound sign
-                          updateData({ budget: '£' + parseInt(numericValue, 10).toLocaleString('en-GB') });
-                        } else {
-                          // If empty, clear the field entirely
-                          updateData({ budget: '' });
-                        }
+                        updateData({ budget: numericValue ? '£' + parseInt(numericValue, 10).toLocaleString('en-GB') : '' });
                       }}
                       placeholder="e.g. £1,500"
                       className={`w-full bg-slate-50 border-none ${errors.budget ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
@@ -1077,81 +1093,82 @@ function ApplicationModal({ onClose }) {
             {/* Step 4 */}
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">Would you like a free strategy call? <span className="text-red-500">*</span></h3>
-                
+                <h3 className="text-3xl font-black mb-8 text-slate-900 tracking-tight">How can we reach you?</h3>
                 <div className="space-y-5">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div 
-                      onClick={() => updateData({ wantsCall: 'yes' })}
-                      className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'yes' ? 'border-[#0314B0] bg-blue-50 text-[#0314B0] shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
-                    >
-                      <PhoneCall className="w-5 h-5" />
-                      Yes, let's talk
-                    </div>
-                    <div 
-                      onClick={() => updateData({ wantsCall: 'no', callDate: '', callTime: '' })}
-                      className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'no' ? 'border-slate-800 bg-slate-800 text-white shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
-                    >
-                      <Mail className="w-5 h-5" />
-                      No, just email me
-                    </div>
+                  <div>
+                    <label className="block text-sm font-extrabold text-slate-800 mb-2">Your Name <span className="text-red-500">*</span></label>
+                    <input 
+                      type="text" value={formData.firstName}
+                      onChange={(e) => updateData({ firstName: e.target.value })}
+                      placeholder="John Doe"
+                      className={`w-full bg-slate-50 border-none ${errors.firstName ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
+                    />
+                    {errors.firstName && <p className="text-red-500 text-sm mt-2 font-bold">{errors.firstName}</p>}
                   </div>
-                  {errors.wantsCall && <p className="text-red-500 text-sm mt-2 font-bold text-center">{errors.wantsCall}</p>}
+                  <div>
+                    <label className="block text-sm font-extrabold text-slate-800 mb-2">Email Address <span className="text-red-500">*</span></label>
+                    <input 
+                      type="email" value={formData.email}
+                      onChange={(e) => updateData({ email: e.target.value })}
+                      placeholder="john@example.com"
+                      className={`w-full bg-slate-50 border-none ${errors.email ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
+                    />
+                    {errors.email && <p className="text-red-500 text-sm mt-2 font-bold">{errors.email}</p>}
+                    <p className="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1.5 px-2">
+                       <Lock className="w-3.5 h-3.5 text-slate-400" />
+                       We will never send promotional emails or share your data.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-extrabold text-slate-800 mb-2">Phone Number {formData.wantsCall === 'yes' ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-medium">(Optional)</span>}</label>
+                    <input 
+                      type="tel" value={formData.phone}
+                      onChange={(e) => updateData({ phone: e.target.value })}
+                      placeholder="+44 (555) 000-0000"
+                      className={`w-full bg-slate-50 border-none ${errors.phone ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-2xl px-6 py-5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-lg`}
+                    />
+                    {errors.phone && <p className="text-red-500 text-sm mt-2 font-bold">{errors.phone}</p>}
+                  </div>
+
+                  <div className="mt-8 border-t border-slate-100 pt-8">
+                    <label className="block text-sm font-extrabold text-slate-800 mb-3">Would you like a free strategy call? <span className="text-red-500">*</span></label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div 
+                        onClick={() => updateData({ wantsCall: 'yes' })}
+                        className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'yes' ? 'border-[#0314B0] bg-blue-50 text-[#0314B0] shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
+                      >
+                        <PhoneCall className="w-5 h-5" /> Yes, let's talk
+                      </div>
+                      <div 
+                        onClick={() => updateData({ wantsCall: 'no', callDate: '', callTime: '' })}
+                        className={`cursor-pointer p-4 rounded-2xl text-center transition-all font-extrabold text-sm border-2 flex flex-col items-center gap-2 ${formData.wantsCall === 'no' ? 'border-slate-800 bg-slate-800 text-white shadow-sm' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-200 hover:bg-slate-50'}`}
+                      >
+                        <Mail className="w-5 h-5" /> No, just email me
+                      </div>
+                    </div>
+                    {errors.wantsCall && <p className="text-red-500 text-sm mt-2 font-bold text-center">{errors.wantsCall}</p>}
+                  </div>
 
                   <AnimatePresence>
                     {formData.wantsCall === 'yes' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                        className="overflow-hidden"
-                      >
+                      <motion.div initial={{ opacity: 0, height: 0, marginTop: 0 }} animate={{ opacity: 1, height: 'auto', marginTop: 16 }} exit={{ opacity: 0, height: 0, marginTop: 0 }} className="overflow-hidden">
                         <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4">
-                          
-                          {/* If they didn't provide a phone on Step 1, make them provide it now! */}
-                          {!formData.phone && (
-                            <div className="mb-4 bg-white p-4 rounded-xl border border-red-200 shadow-sm">
-                              <label className="block text-sm font-extrabold text-slate-800 mb-2 flex items-center gap-2">
-                                <PhoneCall className="w-4 h-4 text-red-500" /> Phone Number <span className="text-red-500">*</span>
-                              </label>
-                              <p className="text-xs text-slate-500 mb-3">Please provide a phone number so we can reach you for the call.</p>
-                              <input 
-                                type="tel" 
-                                value={formData.phone}
-                                onChange={(e) => updateData({ phone: e.target.value })}
-                                placeholder="+44 (555) 000-0000"
-                                className={`w-full bg-slate-50 border-none ${errors.phone ? 'ring-2 ring-red-400 bg-red-50' : ''} rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
-                              />
-                              {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-bold">{errors.phone}</p>}
-                            </div>
-                          )}
-
                           <div>
                             <label className="block text-sm font-extrabold text-slate-800 mb-2">Select a Date <span className="text-red-500">*</span></label>
-                            <div className="relative">
-                              <input 
-                                type="date"
-                                min={new Date().toISOString().split('T')[0]}
-                                value={formData.callDate}
-                                onChange={(e) => updateData({ callDate: e.target.value })}
-                                className={`w-full bg-white border ${errors.callDate ? 'border-red-400 ring-1 ring-red-400' : 'border-slate-200'} rounded-xl px-4 py-3.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
-                              />
-                            </div>
+                            <input 
+                              type="date" min={new Date().toISOString().split('T')[0]} value={formData.callDate}
+                              onChange={(e) => updateData({ callDate: e.target.value })}
+                              className={`w-full bg-white border ${errors.callDate ? 'border-red-400 ring-1 ring-red-400' : 'border-slate-200'} rounded-xl px-4 py-3.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
+                            />
                             {errors.callDate && <p className="text-red-500 text-xs mt-1.5 font-bold">{errors.callDate}</p>}
                           </div>
-
                           <div>
                             <label className="block text-sm font-extrabold text-slate-800 mb-2">Desired Time (11 AM - 6 PM UK Time) <span className="text-red-500">*</span></label>
-                            <div className="relative">
-                              <input 
-                                type="time"
-                                min="11:00"
-                                max="18:00"
-                                value={formData.callTime}
-                                onChange={(e) => updateData({ callTime: e.target.value })}
-                                className={`w-full bg-white border ${errors.callTime ? 'border-red-400 ring-1 ring-red-400' : 'border-slate-200'} rounded-xl px-4 py-3.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
-                              />
-                            </div>
+                            <input 
+                              type="time" min="11:00" max="18:00" value={formData.callTime}
+                              onChange={(e) => updateData({ callTime: e.target.value })}
+                              className={`w-full bg-white border ${errors.callTime ? 'border-red-400 ring-1 ring-red-400' : 'border-slate-200'} rounded-xl px-4 py-3.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0314B0] transition-all font-bold text-sm`}
+                            />
                             {errors.callTime && <p className="text-red-500 text-xs mt-1.5 font-bold">{errors.callTime}</p>}
                           </div>
                         </div>
@@ -1162,43 +1179,27 @@ function ApplicationModal({ onClose }) {
               </motion.div>
             )}
 
-            {/* Success Step 5 */}
+            {/* Step 5 - Success */}
             {step === 5 && (
               <motion.div key="step5" className="text-center py-16 relative overflow-visible h-full min-h-[300px] flex flex-col items-center justify-center">
-                
                 <div className="relative w-full h-32 flex items-center justify-center mb-6">
-                  {/* The Morphing Rocket - It receives layoutId="hero-rocket" from the header */}
                   <motion.div
                     layoutId="hero-rocket"
-                    animate={ rocketStage === 'launched' 
-                      ? { y: -1000, scale: 0.5, opacity: 0 } // Flies out of the screen
-                      : { y: 0, scale: 2.5, opacity: 1 }     // Centers and grows large
-                    }
-                    transition={ rocketStage === 'launched' 
-                      ? { duration: 1.2, ease: "easeIn" } 
-                      : { duration: 0.8, type: "spring", bounce: 0.3 }
-                    }
+                    animate={ rocketStage === 'launched' ? { y: -1000, scale: 0.5, opacity: 0 } : { y: 0, scale: 2.5, opacity: 1 } }
+                    transition={ rocketStage === 'launched' ? { duration: 1.2, ease: "easeIn" } : { duration: 0.8, type: "spring", bounce: 0.3 } }
                     className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-[0_20px_50px_rgba(3,20,176,0.4)] absolute z-50"
                   >
                      <Rocket className="w-8 h-8 text-white" fill="currentColor" />
-                     
-                     {/* Fire appearing only when launched */}
                      {rocketStage === 'launched' && (
                        <motion.div 
-                         initial={{ opacity: 0, scaleY: 0 }}
-                         animate={{ opacity: [0.5, 1, 0.5], scaleY: [1, 2, 1] }} 
-                         transition={{ repeat: Infinity, duration: 0.1 }}
+                         initial={{ opacity: 0, scaleY: 0 }} animate={{ opacity: [0.5, 1, 0.5], scaleY: [1, 2, 1] }} transition={{ repeat: Infinity, duration: 0.1 }}
                          className="absolute -bottom-16 w-8 h-20 bg-gradient-to-b from-orange-400 via-yellow-300 to-transparent rounded-full blur-[8px] -z-10 origin-top"
                        />
                      )}
                   </motion.div>
-
-                  {/* The Big Blue Checkmark (Appears after rocket launches) */}
                   {rocketStage === 'launched' && (
                     <motion.div
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.5, type: "spring", bounce: 0.5, duration: 0.6 }}
+                      initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5, type: "spring", bounce: 0.5, duration: 0.6 }}
                       className="w-24 h-24 rounded-full bg-gradient-to-br from-[#0314B0] to-blue-500 flex items-center justify-center shadow-[0_20px_50px_rgba(3,20,176,0.4)] absolute z-40"
                     >
                       <Check className="w-12 h-12 text-white" strokeWidth={4} />
@@ -1206,28 +1207,17 @@ function ApplicationModal({ onClose }) {
                   )}
                 </div>
 
-                {/* Text Reveal after the rocket flies away */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: rocketStage === 'launched' ? 1 : 0, y: rocketStage === 'launched' ? 0 : 30 }}
-                  transition={{ delay: 0.6, duration: 0.6 }}
-                >
-                  <h3 className="text-4xl font-black mb-4 text-slate-900 tracking-tight">
-                    Application Submitted
-                  </h3>
+                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: rocketStage === 'launched' ? 1 : 0, y: rocketStage === 'launched' ? 0 : 30 }} transition={{ delay: 0.6, duration: 0.6 }}>
+                  <h3 className="text-4xl font-black mb-4 text-slate-900 tracking-tight">Application Submitted</h3>
                   <p className="text-slate-500 mb-10 max-w-sm mx-auto text-lg font-medium leading-relaxed">
                     Thank you, <span className="font-extrabold text-slate-900">{formData.firstName}</span>. We're reviewing your requirements for <span className="font-extrabold text-slate-900">{formData.businessName}</span>. We'll be in touch shortly.
                   </p>
-                  <button 
-                    onClick={onClose}
-                    className="px-10 py-4 rounded-full bg-slate-100 text-slate-900 font-extrabold text-lg hover:bg-slate-200 transition-all shadow-sm"
-                  >
+                  <button onClick={onClose} className="px-10 py-4 rounded-full bg-slate-100 text-slate-900 font-extrabold text-lg hover:bg-slate-200 transition-all shadow-sm">
                     Return to Homepage
                   </button>
                 </motion.div>
               </motion.div>
             )}
-            
           </AnimatePresence>
         </div>
 
@@ -1235,18 +1225,13 @@ function ApplicationModal({ onClose }) {
         {step < 5 && (
           <div className="p-6 bg-white flex justify-between items-center z-10 relative border-t border-slate-50">
             {step > 1 ? (
-              <button 
-                onClick={handleBack}
-                disabled={isSubmitting}
-                className="px-6 py-4 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-50 font-bold transition-all flex items-center gap-2 disabled:opacity-50"
-              >
+              <button onClick={handleBack} disabled={isSubmitting} className="px-6 py-4 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-50 font-bold transition-all flex items-center gap-2 disabled:opacity-50">
                 <ChevronLeft className="w-5 h-5" /> Back
               </button>
             ) : <div></div>}
             
             <button 
-              onClick={step === 4 ? handleSubmit : handleNext}
-              disabled={isSubmitting}
+              onClick={step === 4 ? handleSubmit : handleNext} disabled={isSubmitting}
               className="px-10 py-4 rounded-full bg-gradient-to-r from-[#0314B0] to-[#001B70] text-white font-extrabold hover:shadow-[0_10px_25px_rgba(3,20,176,0.3)] hover:-translate-y-0.5 transition-all flex items-center gap-2 group disabled:opacity-80"
             >
               <span>{step === 4 ? 'Submit Application' : 'Continue'}</span>
@@ -1268,72 +1253,35 @@ function ApplicationModal({ onClose }) {
 
 function PortfolioCard({ project, className = "flex" }) {
   const [isHolding, setIsHolding] = useState(false);
-
-  // Prevent default drag behavior so the browser doesn't try to drag the image
   const preventDrag = (e) => e.preventDefault();
 
   return (
     <motion.div 
       layout
       whileHover={{ y: -8 }}
-      onMouseDown={() => setIsHolding(true)}
-      onMouseUp={() => setIsHolding(false)}
-      onMouseLeave={() => setIsHolding(false)}
-      onTouchStart={() => setIsHolding(true)}
-      onTouchEnd={() => setIsHolding(false)}
-      onTouchCancel={() => setIsHolding(false)}
+      onMouseDown={() => setIsHolding(true)} onMouseUp={() => setIsHolding(false)} onMouseLeave={() => setIsHolding(false)}
+      onTouchStart={() => setIsHolding(true)} onTouchEnd={() => setIsHolding(false)} onTouchCancel={() => setIsHolding(false)}
       onContextMenu={(e) => e.preventDefault()}
       style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
       className={`group bg-white rounded-[1.5rem] sm:rounded-[2rem] p-2 sm:p-3 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 cursor-pointer transition-all duration-300 flex-col ${className}`}
     >
-      <motion.div 
-        layout
-        className={`w-full relative rounded-2xl sm:rounded-3xl overflow-hidden mb-3 sm:mb-4 bg-slate-100 transition-[padding-top] duration-500 ease-in-out ${isHolding ? 'pt-[160%]' : 'pt-[75%]'}`}
-      >
-        <img 
-          src={project.img} 
-          alt={project.title} 
-          onDragStart={preventDrag} 
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHolding ? 'opacity-0' : 'opacity-100'}`} 
-        />
-        <img 
-          src={project.verticalImg} 
-          alt={`${project.title} Vertical`} 
-          onDragStart={preventDrag} 
-          className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} 
-        />
-        
-        {/* Overlay and Indicator */}
+      <motion.div layout className={`w-full relative rounded-2xl sm:rounded-3xl overflow-hidden mb-3 sm:mb-4 bg-slate-100 transition-[padding-top] duration-500 ease-in-out ${isHolding ? 'pt-[160%]' : 'pt-[75%]'}`}>
+        <img src={project.img} alt={project.title} onDragStart={preventDrag} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHolding ? 'opacity-0' : 'opacity-100'}`} />
+        <img src={project.verticalImg} alt={`${project.title} Vertical`} onDragStart={preventDrag} className={`absolute inset-0 w-full h-full object-top object-cover transition-opacity duration-500 ${isHolding ? 'opacity-100' : 'opacity-0'}`} />
         <div className={`absolute inset-0 bg-[#0314B0]/0 transition-colors duration-500 z-10 flex flex-col items-center justify-end pb-4 sm:pb-6 ${isHolding ? 'opacity-0 pointer-events-none' : 'opacity-100 group-hover:bg-[#0314B0]/10'}`}>
-            {/* Always visible hold to preview pill with continuous finger animation */}
             <div className="bg-[#121626]/95 backdrop-blur-md text-white text-[11px] sm:text-xs font-extrabold px-3 sm:px-4 py-2.5 rounded-full flex items-center gap-2.5 shadow-2xl border border-white/10 relative transition-transform duration-300 transform group-hover:scale-105">
-              
               <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
-                 {/* Blue dot base */}
-                 <motion.div 
-                   animate={{ scale: [1, 0.7, 1] }}
-                   transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                   className="absolute w-2.5 h-2.5 bg-[#4B83FF] rounded-full" 
-                 />
-                 
-                 {/* Finger pressing animation */}
-                 <motion.div
-                   animate={{ scale: [1, 0.9, 1], y: [-6, 2, -6], rotate: [-5, 0, -5] }}
-                   transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                   className="absolute z-20 origin-bottom-right"
-                   style={{ left: '2px', top: '-2px' }}
-                 >
+                 <motion.div animate={{ scale: [1, 0.7, 1] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }} className="absolute w-2.5 h-2.5 bg-[#4B83FF] rounded-full" />
+                 <motion.div animate={{ scale: [1, 0.9, 1], y: [-6, 2, -6], rotate: [-5, 0, -5] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }} className="absolute z-20 origin-bottom-right" style={{ left: '2px', top: '-2px' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff" stroke="#121626" strokeWidth="1.5">
                       <path d="M12 2a2.5 2.5 0 0 1 2.5 2.5V10h.5a2.5 2.5 0 0 1 2.5 2.5v.5h.5a2.5 2.5 0 0 1 2.5 2.5v4.5a6.5 6.5 0 0 1-6.5 6.5h-2a6.5 6.5 0 0 1-4.75-2.14l-3.64-3.9a2.5 2.5 0 0 1 3.68-3.38l1.71 1.83V4.5A2.5 2.5 0 0 1 12 2z"/>
                     </svg>
                  </motion.div>
               </div>
-
               <span className="tracking-wide">Hold to preview</span>
             </div>
         </div>
       </motion.div>
-      
       <motion.div layout className="px-2 sm:px-4 pb-2 sm:pb-3">
         <p className="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-0.5 sm:mb-1">{project.cat}</p>
         <h4 className="text-sm sm:text-xl font-extrabold text-slate-800 leading-tight">{project.title}</h4>
@@ -1342,7 +1290,6 @@ function PortfolioCard({ project, className = "flex" }) {
   );
 }
 
-// Inline SVG components to bypass missing Lucide brand icons
 function FacebookIcon({ className }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
